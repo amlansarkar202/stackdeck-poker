@@ -222,11 +222,14 @@ export function GameProvider({ children }) {
     });
   };
 
-  const sendAction = (action, amount = 0) => {
+  const sendAction = (action, amount = 0, explicitPlayerId = null) => {
     if (!socket || !gameState) return;
+    const targetPlayer = gameState.players?.find(p => p.id === user.id || (user.name && p.name && p.name.trim().toLowerCase() === user.name.trim().toLowerCase()));
+    const activePlayerId = explicitPlayerId || targetPlayer?.id || user.id;
+
     socket.emit('player_action', {
       roomId: gameState.roomId,
-      playerId: user.id,
+      playerId: activePlayerId,
       action,
       amount,
     }, (res) => {
@@ -278,16 +281,23 @@ export function GameProvider({ children }) {
       if (!res.success) setError(res.error);
     });
   };
-  const takeLoan = (playerId, amount = null) => {
+
+  const takeLoan = (playerId = null, amount = null) => {
     if (!socket || !gameState) return;
-    socket.emit('take_loan', { roomId: gameState.roomId, playerId, amount }, (res) => {
+    const targetPlayer = gameState.players?.find(p => p.id === user.id || (user.name && p.name && p.name.trim().toLowerCase() === user.name.trim().toLowerCase()));
+    const activePlayerId = playerId || targetPlayer?.id || user.id;
+
+    socket.emit('take_loan', { roomId: gameState.roomId, playerId: activePlayerId, amount }, (res) => {
       if (!res.success) setError(res.error);
     });
   };
 
-  const repayLoan = (playerId, amount = null) => {
+  const repayLoan = (playerId = null, amount = null) => {
     if (!socket || !gameState) return;
-    socket.emit('repay_loan', { roomId: gameState.roomId, playerId, amount }, (res) => {
+    const targetPlayer = gameState.players?.find(p => p.id === user.id || (user.name && p.name && p.name.trim().toLowerCase() === user.name.trim().toLowerCase()));
+    const activePlayerId = playerId || targetPlayer?.id || user.id;
+
+    socket.emit('repay_loan', { roomId: gameState.roomId, playerId: activePlayerId, amount }, (res) => {
       if (!res.success) setError(res.error);
     });
   };

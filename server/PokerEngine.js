@@ -174,9 +174,16 @@ export class PokerEngine {
     this.logAction('Host updated player seating arrangement');
   }
 
+  getPlayerIndex(playerId) {
+    if (!playerId) return -1;
+    const str = String(playerId).trim().toLowerCase();
+    return this.players.findIndex(p => p.id === playerId || (p.name && p.name.trim().toLowerCase() === str));
+  }
+
   rebuy(playerId, amount) {
-    const player = this.players.find(p => p.id === playerId);
-    if (!player) return false;
+    const playerIdx = this.getPlayerIndex(playerId);
+    if (playerIdx === -1) return false;
+    const player = this.players[playerIdx];
     player.stack += Number(amount);
     player.totalBuyIn = (player.totalBuyIn || 0) + Number(amount);
     if (player.stack > 0 && player.isAllIn && !this.isHandActive) {
@@ -187,8 +194,9 @@ export class PokerEngine {
   }
 
   editStack(playerId, newStack) {
-    const player = this.players.find(p => p.id === playerId);
-    if (!player) return false;
+    const playerIdx = this.getPlayerIndex(playerId);
+    if (playerIdx === -1) return false;
+    const player = this.players[playerIdx];
     const diff = Number(newStack) - player.stack;
     player.stack = Number(newStack);
     player.totalBuyIn = (player.totalBuyIn || 0) + diff;
@@ -197,8 +205,9 @@ export class PokerEngine {
   }
 
   takeLoan(playerId, customAmount = null) {
-    const player = this.players.find(p => p.id === playerId);
-    if (!player) throw new Error('Player not found');
+    const playerIdx = this.getPlayerIndex(playerId);
+    if (playerIdx === -1) throw new Error('Player not found');
+    const player = this.players[playerIdx];
 
     const loanAmt = Number(customAmount) > 0 ? Number(customAmount) : this.startingStack;
     player.stack += loanAmt;
@@ -214,8 +223,9 @@ export class PokerEngine {
   }
 
   repayLoan(playerId, amount = null) {
-    const player = this.players.find(p => p.id === playerId);
-    if (!player) throw new Error('Player not found');
+    const playerIdx = this.getPlayerIndex(playerId);
+    if (playerIdx === -1) throw new Error('Player not found');
+    const player = this.players[playerIdx];
     if (!player.loanAmount || player.loanAmount <= 0) {
       throw new Error('No active loan to repay');
     }
@@ -373,7 +383,7 @@ export class PokerEngine {
 
   // --- ACTIONS ---
   fold(playerId) {
-    const playerIdx = this.players.findIndex(p => p.id === playerId);
+    const playerIdx = this.getPlayerIndex(playerId);
     if (playerIdx === -1) throw new Error('Player not found');
     const player = this.players[playerIdx];
 
@@ -399,7 +409,7 @@ export class PokerEngine {
   }
 
   check(playerId) {
-    const playerIdx = this.players.findIndex(p => p.id === playerId);
+    const playerIdx = this.getPlayerIndex(playerId);
     if (playerIdx === -1) throw new Error('Player not found');
     const player = this.players[playerIdx];
 
@@ -418,7 +428,7 @@ export class PokerEngine {
   }
 
   call(playerId) {
-    const playerIdx = this.players.findIndex(p => p.id === playerId);
+    const playerIdx = this.getPlayerIndex(playerId);
     if (playerIdx === -1) throw new Error('Player not found');
     const player = this.players[playerIdx];
 
@@ -449,7 +459,7 @@ export class PokerEngine {
   }
 
   raise(playerId, targetBetAmount) {
-    const playerIdx = this.players.findIndex(p => p.id === playerId);
+    const playerIdx = this.getPlayerIndex(playerId);
     if (playerIdx === -1) throw new Error('Player not found');
     const player = this.players[playerIdx];
 

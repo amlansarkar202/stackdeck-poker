@@ -192,23 +192,26 @@ io.on('connection', (socket) => {
       const room = gameManager.getRoom(roomId);
       if (!room) throw new Error('Room not found');
 
+      const session = gameManager.socketToRoom.get(socket.id);
+      const effectivePlayerId = playerId || session?.playerId;
+
       switch (action) {
         case 'fold':
-          room.engine.fold(playerId);
+          room.engine.fold(effectivePlayerId);
           gameManager.broadcastState(room.id, 'FOLD');
           break;
         case 'check':
-          room.engine.check(playerId);
+          room.engine.check(effectivePlayerId);
           gameManager.broadcastState(room.id, 'CHECK');
           break;
         case 'call':
-          room.engine.call(playerId);
+          room.engine.call(effectivePlayerId);
           gameManager.broadcastState(room.id, 'CHIPS');
           break;
         case 'raise':
         case 'bet':
         case 'all-in':
-          room.engine.raise(playerId, amount);
+          room.engine.raise(effectivePlayerId, amount);
           gameManager.broadcastState(room.id, 'CHIPS');
           break;
         default:

@@ -84,6 +84,7 @@ export class GameManager {
       // Reconnect / resume existing seat seamlessly
       existingPlayer.isConnected = true;
       if (playerData.avatar) existingPlayer.avatar = playerData.avatar;
+      if (playerData.id) existingPlayer.id = playerData.id;
       activePlayer = existingPlayer;
       room.engine.logAction(`🔄 ${existingPlayer.name} reconnected to table`);
     } else {
