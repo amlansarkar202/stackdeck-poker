@@ -8,16 +8,15 @@ import ActionControls from '../components/ActionControls';
 import ShowdownModal from '../components/ShowdownModal';
 import HostMenuModal from '../components/HostMenuModal';
 import ActivityLogModal from '../components/ActivityLogModal';
-import QRCodeModal from '../components/QRCodeModal';
 import ThemeSelectorModal from '../components/ThemeSelectorModal';
-import { QrCode, History, Settings, Play, Palette, Volume2, VolumeX, CheckCircle } from 'lucide-react';
+import { History, Settings, Play, Palette, Volume2, VolumeX, CheckCircle, Copy, Check } from 'lucide-react';
 
 export default function Table() {
   const { id: routeRoomId } = useParams();
   const navigate = useNavigate();
   const { gameState, user, connected, startHand, joinRoom, soundEnabled, toggleSound, reconnectAlert, currentTheme } = useGame();
 
-  const [showQR, setShowQR] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(false);
   const [showHostMenu, setShowHostMenu] = useState(false);
   const [showLog, setShowLog] = useState(false);
   const [showShowdown, setShowShowdown] = useState(false);
@@ -81,14 +80,27 @@ export default function Table() {
         <div className="flex items-center gap-1.5 sm:gap-3">
           <Link to="/" className="text-base sm:text-lg">♠️</Link>
           
-          {/* Room Code Badge */}
+          {/* Room Code Badge (Direct 1-Click Copy Link) */}
           <button
-            onClick={() => setShowQR(true)}
-            className={`flex items-center gap-1 bg-white/5 hover:bg-white/10 border border-white/15 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-extrabold ${currentTheme.accentTextLight} transition-all cursor-pointer`}
-            title="View Join QR Code & Link"
+            onClick={() => {
+              navigator.clipboard.writeText(`${window.location.origin}/join?code=${roomId}`);
+              setCopiedCode(true);
+              setTimeout(() => setCopiedCode(false), 1800);
+            }}
+            className={`flex items-center gap-1.5 bg-white/5 hover:bg-white/10 border border-white/15 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-extrabold ${currentTheme.accentTextLight} transition-all cursor-pointer`}
+            title="Click to copy invite link"
           >
-            <QrCode className="w-3 h-3" />
-            <span>{roomId}</span>
+            {copiedCode ? (
+              <>
+                <Check className="w-3 h-3 text-emerald-400" />
+                <span className="text-emerald-400 font-bold">Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3 h-3 text-slate-400" />
+                <span>{roomId}</span>
+              </>
+            )}
           </button>
         </div>
 
@@ -186,12 +198,6 @@ export default function Table() {
         isOpen={showLog}
         onClose={() => setShowLog(false)}
         isHost={isHost}
-      />
-
-      <QRCodeModal
-        isOpen={showQR}
-        onClose={() => setShowQR(false)}
-        roomId={roomId}
       />
 
       <ThemeSelectorModal
