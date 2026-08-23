@@ -14,7 +14,7 @@ export default function ActionControls() {
     startingStack = 1000,
   } = gameState || {};
 
-  const myPlayer = players.find(p => p.id === user.id);
+  const myPlayer = players.find(p => p.id === user.id || (user.name && p.name && p.name.trim().toLowerCase() === user.name.trim().toLowerCase()));
   const isMyTurn = myPlayer && myPlayer.isTurn && isHandActive && !myPlayer.isFolded && !myPlayer.isAllIn && !myPlayer.isSittingOut;
 
   // Calculate needed call amount & stack math
@@ -265,54 +265,54 @@ export default function ActionControls() {
           </div>
         )}
 
-        {/* PRIMARY ACTION BUTTONS: FOLD (Red) | CHECK/CALL (Green) | RAISE (Blue) | ALL-IN (Yellow-Orange) */}
-        <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+        {/* PRIMARY ACTION BUTTONS: 2 ABOVE (Fold | Call/Check), 2 BELOW (Raise | All-In) */}
+        <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
           
-          {/* 1. FOLD (Red) */}
+          {/* Row 1, Left: FOLD (Red) */}
           <button
             type="button"
             onClick={() => sendAction('fold')}
-            className="flex flex-col items-center justify-center py-3 sm:py-3.5 px-1.5 rounded-xl bg-gradient-to-b from-red-800 to-red-950 border border-red-500/50 hover:border-red-400 text-red-100 font-bold shadow active:scale-98 transition-all cursor-pointer"
+            className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-gradient-to-b from-red-800 to-red-950 border border-red-500/50 hover:border-red-400 text-red-100 font-bold shadow active:scale-98 transition-all cursor-pointer"
           >
-            <XCircle className="w-4 h-4 text-red-400 mb-0.5" />
+            <XCircle className="w-4 h-4 text-red-400" />
             <span className="text-xs sm:text-sm uppercase tracking-wider font-extrabold">Fold</span>
           </button>
 
-          {/* 2. CHECK / CALL (Green) */}
+          {/* Row 1, Right: CHECK / CALL (Green) */}
           {canCheck ? (
             <button
               type="button"
               onClick={() => sendAction('check')}
-              className="flex flex-col items-center justify-center py-3 sm:py-3.5 px-1.5 rounded-xl bg-gradient-to-b from-emerald-600 to-emerald-750 border border-emerald-400/60 hover:border-emerald-300 text-white font-bold shadow active:scale-98 transition-all cursor-pointer"
+              className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-gradient-to-b from-emerald-600 to-emerald-750 border border-emerald-400/60 hover:border-emerald-300 text-white font-bold shadow active:scale-98 transition-all cursor-pointer"
             >
-              <CheckCircle2 className="w-4 h-4 text-emerald-200 mb-0.5" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-200" />
               <span className="text-xs sm:text-sm uppercase tracking-wider font-extrabold">Check</span>
             </button>
           ) : (
             <button
               type="button"
               onClick={() => sendAction('call')}
-              className="flex flex-col items-center justify-center py-3 sm:py-3.5 px-1.5 rounded-xl bg-gradient-to-b from-emerald-600 to-emerald-750 border border-emerald-400/60 hover:border-emerald-300 text-white font-bold shadow active:scale-98 transition-all cursor-pointer"
+              className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-gradient-to-b from-emerald-600 to-emerald-750 border border-emerald-400/60 hover:border-emerald-300 text-white font-bold shadow active:scale-98 transition-all cursor-pointer"
             >
-              <CheckCircle2 className="w-4 h-4 text-emerald-200 mb-0.5" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-200" />
               <span className="text-xs sm:text-sm uppercase tracking-wider font-extrabold">
                 Call ${actualCallAmount.toLocaleString()}
               </span>
             </button>
           )}
 
-          {/* 3. RAISE / BET (Blue) */}
+          {/* Row 2, Left: RAISE / BET (Blue) */}
           {canRaise ? (
             <button
               type="button"
               onClick={() => setIsRaiseOpen(!isRaiseOpen)}
-              className={`flex flex-col items-center justify-center py-3 sm:py-3.5 px-1.5 rounded-xl font-extrabold shadow active:scale-98 transition-all cursor-pointer border ${
+              className={`flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl font-extrabold shadow active:scale-98 transition-all cursor-pointer border ${
                 isRaiseOpen
                   ? 'bg-blue-500 text-white border-white ring-2 ring-blue-300'
                   : 'bg-gradient-to-b from-blue-600 to-blue-750 hover:from-blue-500 hover:to-blue-600 text-white border-blue-400/60'
               }`}
             >
-              <ArrowUpRight className="w-4 h-4 mb-0.5 text-blue-200" />
+              <ArrowUpRight className="w-4 h-4 text-blue-200" />
               <span className="text-xs sm:text-sm uppercase tracking-wider">
                 {currentBet === 0 ? 'Bet...' : 'Raise...'}
               </span>
@@ -320,24 +320,21 @@ export default function ActionControls() {
           ) : (
             <button
               disabled
-              className="flex flex-col items-center justify-center py-3 sm:py-3.5 px-1.5 rounded-xl bg-gray-900 text-gray-600 font-bold text-xs border border-white/5 cursor-not-allowed opacity-40"
+              className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-gray-900 text-gray-600 font-bold text-xs border border-white/5 cursor-not-allowed opacity-40"
             >
-              <ArrowUpRight className="w-4 h-4 mb-0.5 opacity-30" />
+              <ArrowUpRight className="w-4 h-4 opacity-30" />
               <span className="text-xs uppercase tracking-wider">Raise</span>
             </button>
           )}
 
-          {/* 4. ALL-IN (Yellow-Orange) */}
+          {/* Row 2, Right: ALL-IN (Yellow-Orange Gold) */}
           <button
             type="button"
             onClick={handleDirectAllIn}
-            className="flex flex-col items-center justify-center py-3 sm:py-3.5 px-1.5 rounded-xl bg-gradient-to-b from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 border border-amber-300 text-gray-950 font-black shadow active:scale-98 transition-all cursor-pointer"
+            className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-gradient-to-b from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 border border-amber-300 text-gray-950 font-black shadow active:scale-98 transition-all cursor-pointer"
           >
             <span className="text-xs sm:text-sm uppercase tracking-wider font-black">
-              All-In
-            </span>
-            <span className="text-[10px] sm:text-[11px] font-bold text-gray-900 opacity-90 leading-tight">
-              ${maxTargetBet.toLocaleString()}
+              All-In (${maxTargetBet.toLocaleString()})
             </span>
           </button>
 

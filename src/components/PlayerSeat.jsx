@@ -1,10 +1,13 @@
 import React from 'react';
 import { WifiOff } from 'lucide-react';
 import { AvatarIcon, AVATAR_CRESTS } from './AvatarIcon';
+import { useGame } from '../context/GameContext';
 
 export default function PlayerSeat({ player, isSelf = false, onClick = null }) {
+  const { user } = useGame();
   if (!player) return null;
 
+  const isActuallySelf = isSelf || (player.id === user?.id) || (user?.name && player.name && player.name.trim().toLowerCase() === user?.name.trim().toLowerCase());
   const initials = player.name ? player.name.slice(0, 2).toUpperCase() : 'P';
   const crest = AVATAR_CRESTS.find(c => c.id === player.avatar);
 
@@ -48,7 +51,7 @@ export default function PlayerSeat({ player, isSelf = false, onClick = null }) {
         className={`relative z-10 w-11 h-11 sm:w-14 sm:h-14 rounded-full flex items-center justify-center bg-[#111620] border-2 transition-all p-1.5 ${
           player.isTurn
             ? 'border-amber-300 turn-ring-active'
-            : isSelf
+            : isActuallySelf
             ? 'border-emerald-500/80'
             : crest ? crest.border : 'border-white/15'
         }`}
@@ -86,12 +89,12 @@ export default function PlayerSeat({ player, isSelf = false, onClick = null }) {
           className={`text-[10px] sm:text-xs truncate w-full text-center px-2 py-0.5 rounded-md font-bold transition-all ${
             player.isTurn
               ? 'bg-amber-400 text-gray-950 shadow-md ring-1 ring-amber-200'
-              : isSelf
+              : isActuallySelf
               ? 'bg-black/70 text-emerald-400 border border-emerald-500/40'
               : 'bg-black/70 text-slate-200 border border-white/10'
           }`}
         >
-          {player.name} {isSelf && '(You)'}
+          {player.name} {isActuallySelf && '(You)'}
         </span>
         <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-black/80 border border-white/10 shadow mt-0.5">
           <span className="text-[9px] text-amber-400 font-bold">$</span>

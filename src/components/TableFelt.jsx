@@ -58,13 +58,13 @@ export default function TableFelt({
   const activePlayer = players.find(p => p.isTurn);
 
   return (
-    <div className="relative w-full max-w-5xl mx-auto flex flex-col items-center select-none py-1 sm:py-2 px-1 sm:px-2">
+    <div className="relative w-full max-w-6xl mx-auto flex flex-col items-center select-none py-1 sm:py-2 px-1 sm:px-2">
       
-      {/* Felt Board Container */}
-      <div className={`relative w-full aspect-[1/1] xs:aspect-[4/3] sm:aspect-[16/10] min-h-[380px] sm:min-h-[460px] max-h-[520px] rounded-[36px] sm:rounded-[48px] ${themeClass} flex items-center justify-center p-2 sm:p-6 transition-all duration-300`}>
+      {/* Felt Board Container (Extended Length for Multi-Player Spacing) */}
+      <div className={`relative w-full aspect-[1/1] xs:aspect-[5/4] sm:aspect-[16/9] md:aspect-[18/9] min-h-[420px] sm:min-h-[500px] max-h-[580px] rounded-[36px] sm:rounded-[52px] ${themeClass} flex items-center justify-center p-2 sm:p-6 transition-all duration-300`}>
         
         {/* Table Center Info Deck */}
-        <div className="relative z-10 flex flex-col items-center text-center p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl bg-black/85 backdrop-blur-xl border border-white/10 shadow-2xl max-w-[220px] sm:max-w-[340px] w-full">
+        <div className="relative z-10 flex flex-col items-center text-center p-2 sm:p-3.5 rounded-2xl sm:rounded-3xl bg-black/85 backdrop-blur-xl border border-white/10 shadow-2xl max-w-[190px] sm:max-w-[280px] w-full">
           
           {/* Hand # & Street Phase Badge */}
           <div className="flex items-center gap-1.5 mb-0.5">
@@ -182,8 +182,8 @@ export default function TableFelt({
         {players.map((player, idx) => {
           const totalPlayers = players.length;
           const angle = (idx / totalPlayers) * 2 * Math.PI + Math.PI / 2;
-          const radiusX = 41;
-          const radiusY = 38;
+          const radiusX = totalPlayers <= 4 ? 40 : 43;
+          const radiusY = totalPlayers <= 4 ? 36 : 39;
           const x = 50 + radiusX * Math.cos(angle);
           const y = 50 + radiusY * Math.sin(angle);
 
