@@ -81,7 +81,19 @@ io.on('connection', (socket) => {
       socket.join(room.id);
       gameManager.socketToRoom.set(socket.id, { roomId: room.id, playerId: hostData.id });
       
-      callback({ success: true, roomId: room.id });
+      const initialState = {
+        roomId: room.id,
+        hostId: room.hostId,
+        name: room.name,
+        status: room.status,
+        isLocked: room.isLocked,
+        blindTimerMinutes: room.blindTimerMinutes,
+        blindTimerSecondsLeft: room.blindTimerSecondsLeft,
+        isTimerRunning: room.isTimerRunning,
+        ...room.engine.getState(),
+      };
+
+      callback({ success: true, roomId: room.id, state: initialState });
       gameManager.broadcastState(room.id, 'JOIN');
     } catch (err) {
       console.error('Error creating room:', err);

@@ -125,6 +125,7 @@ export function GameProvider({ children }) {
       if (!socket) return reject(new Error('Socket not connected'));
       socket.emit('create_room', { hostData: user, config }, (res) => {
         if (res.success) {
+          if (res.state) setGameState(res.state);
           resolve(res.roomId);
         } else {
           setError(res.error);
