@@ -109,13 +109,25 @@ io.on('connection', (socket) => {
 
       const isReconnected = activePlayer.id !== playerData.id || activePlayer.name.trim().toLowerCase() === (playerData.name || '').trim().toLowerCase();
 
+      const fullState = {
+        roomId: room.id,
+        hostId: room.hostId,
+        name: room.name,
+        status: room.status,
+        isLocked: room.isLocked,
+        blindTimerMinutes: room.blindTimerMinutes,
+        blindTimerSecondsLeft: room.blindTimerSecondsLeft,
+        isTimerRunning: room.isTimerRunning,
+        ...room.engine.getState(),
+      };
+
       callback({
         success: true,
         roomId: room.id,
         playerId: activePlayer.id,
         playerName: activePlayer.name,
         isReconnected: isReconnected,
-        state: room.engine.getState()
+        state: fullState
       });
       gameManager.broadcastState(room.id, 'JOIN');
     } catch (err) {
