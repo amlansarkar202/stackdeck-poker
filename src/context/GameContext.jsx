@@ -125,6 +125,9 @@ export function GameProvider({ children }) {
       if (!socket) return reject(new Error('Socket not connected'));
       socket.emit('create_room', { hostData: user, config }, (res) => {
         if (res.success) {
+          const profile = { id: user.id, name: user.name, avatar: user.avatar };
+          localStorage.setItem(`poker_player_${res.roomId}`, JSON.stringify(profile));
+          sessionStorage.setItem(`poker_player_${res.roomId}`, JSON.stringify(profile));
           if (res.state) setGameState(res.state);
           resolve(res.roomId);
         } else {
@@ -138,18 +141,23 @@ export function GameProvider({ children }) {
   const joinRoom = (roomId, initialStack, customName = null, customAvatar = null) => {
     return new Promise((resolve, reject) => {
       if (!socket) return reject(new Error('Socket not connected'));
+      const cleanCode = roomId.toUpperCase();
       const activeName = customName || user.name;
       const activeAvatar = customAvatar || user.avatar;
 
       socket.emit('join_room', {
-        roomId: roomId.toUpperCase(),
+        roomId: cleanCode,
         playerData: { ...user, name: activeName, avatar: activeAvatar, stack: initialStack }
       }, (res) => {
         if (res.success) {
           if (res.playerId) {
-            setUser(prev => ({ ...prev, id: res.playerId, name: res.playerName || prev.name }));
+            const profile = { id: res.playerId, name: res.playerName || activeName, avatar: activeAvatar };
+            setUser(profile);
             sessionStorage.setItem('poker_user_id', res.playerId);
-            if (res.playerName) sessionStorage.setItem('poker_user_name', res.playerName);
+            sessionStorage.setItem('poker_user_name', profile.name);
+            sessionStorage.setItem('poker_user_avatar', profile.avatar);
+            localStorage.setItem(`poker_player_${cleanCode}`, JSON.stringify(profile));
+            sessionStorage.setItem(`poker_player_${cleanCode}`, JSON.stringify(profile));
           }
           if (res.isReconnected) {
             setReconnectAlert(`Welcome back, ${res.playerName}! Reconnected to your seat.`);

@@ -33,13 +33,26 @@ export default function Table() {
     }
   }, [gameState?.currentStreet, isHost]);
 
-  // Auto-join if user refreshed or navigated directly
+  // Auto-join & reconnect seamlessly if user refreshed or navigated directly
   useEffect(() => {
     if (connected && routeRoomId && (!gameState || gameState.roomId !== routeRoomId.toUpperCase())) {
-      joinRoom(routeRoomId.toUpperCase(), 1000).catch(() => {
-        // if join fails, redirect to join screen
-        navigate(`/join?code=${routeRoomId}`);
-      });
+      const cleanCode = routeRoomId.toUpperCase();
+      const savedPlayer = JSON.parse(
+        localStorage.getItem(`poker_player_${cleanCode}`) ||
+        sessionStorage.getItem(`poker_player_${cleanCode}`) ||
+        'null'
+      );
+
+      const joinName = savedPlayer?.name || user?.name;
+      const joinAvatar = savedPlayer?.avatar || user?.avatar;
+
+      if (joinName) {
+        joinRoom(cleanCode, 1000, joinName, joinAvatar).catch(() => {
+          navigate(`/join?code=${cleanCode}`);
+        });
+      } else {
+        navigate(`/join?code=${cleanCode}`);
+      }
     }
   }, [connected, routeRoomId, gameState?.roomId]);
 
