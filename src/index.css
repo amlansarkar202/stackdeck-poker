@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply text-slate-100 font-sans antialiased overflow-x-hidden min-h-screen transition-colors duration-500;
+    touch-action: manipulation;
+  }
+}
+
+/* --- GLOBAL THEME 1: EXECUTIVE NOIR --- */
+:root,
+[data-theme="cyberpunk"],
+[data-theme="noir"] {
+  --bg-primary: #090c10;
+  --bg-gradient: radial-gradient(circle at 50% 0%, #151a23 0%, #090c10 75%);
+  --accent: #f59e0b;
+}
+[data-theme="cyberpunk"] body,
+[data-theme="noir"] body {
+  background: radial-gradient(circle at 50% 0%, #151a23 0%, #090c10 75%);
+}
+
+/* --- GLOBAL THEME 2: MONACO EMERALD --- */
+[data-theme="emerald"] {
+  --bg-primary: #05140c;
+  --bg-gradient: radial-gradient(circle at 50% 0%, #0e2e1b 0%, #05140c 75%);
+  --accent: #10b981;
+}
+[data-theme="emerald"] body {
+  background: radial-gradient(circle at 50% 0%, #0e2e1b 0%, #05140c 75%);
+}
+
+/* --- GLOBAL THEME 3: HIGH ROLLER NAVY --- */
+[data-theme="sapphire"] {
+  --bg-primary: #050b14;
+  --bg-gradient: radial-gradient(circle at 50% 0%, #0f1f38 0%, #050b14 75%);
+  --accent: #3b82f6;
+}
+[data-theme="sapphire"] body {
+  background: radial-gradient(circle at 50% 0%, #0f1f38 0%, #050b14 75%);
+}
+
+/* --- TABLE FELT STYLING --- */
+.poker-felt-cyberpunk,
+.poker-felt-noir {
+  background: radial-gradient(ellipse at 50% 50%, #151a23 0%, #0d1117 65%, #07090d 100%);
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.95), 0 25px 60px rgba(0, 0, 0, 0.85);
+  border: 12px solid #1c222d;
+  outline: 2px solid rgba(245, 158, 11, 0.35);
+  position: relative;
+}
+.poker-felt-cyberpunk::before,
+.poker-felt-noir::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  pointer-events: none;
+}
+
+.poker-felt-emerald {
+  background: radial-gradient(ellipse at 50% 50%, #103822 0%, #0b2517 65%, #05140c 100%);
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.9), 0 25px 60px rgba(0, 0, 0, 0.85);
+  border: 12px solid #231710;
+  outline: 2px solid rgba(16, 185, 129, 0.45);
+  position: relative;
+}
+.poker-felt-emerald::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 36px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  pointer-events: none;
+}
+
+.poker-felt-sapphire {
+  background: radial-gradient(ellipse at 50% 50%, #132238 0%, #0c1524 65%, #060b13 100%);
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.95), 0 25px 60px rgba(0, 0, 0, 0.85);
+  border: 12px solid #19202c;
+  outline: 2px solid rgba(59, 130, 246, 0.4);
+  position: relative;
+}
+.poker-felt-sapphire::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 36px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  pointer-events: none;
+}
+
+/* Executive Glowing Turn Light */
+.turn-ring-active {
+  box-shadow: 0 0 0 3px #f59e0b, 0 0 25px rgba(245, 158, 11, 0.85), 0 0 50px rgba(245, 158, 11, 0.45);
+  animation: turnGlowPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes turnGlowPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px #f59e0b, 0 0 20px rgba(245, 158, 11, 0.7), 0 0 45px rgba(245, 158, 11, 0.35);
+    transform: scale(1.08);
+  }
+  50% {
+    box-shadow: 0 0 0 4px #fbbf24, 0 0 35px rgba(245, 158, 11, 0.95), 0 0 70px rgba(245, 158, 11, 0.6);
+    transform: scale(1.12);
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
