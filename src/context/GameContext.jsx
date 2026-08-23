@@ -37,20 +37,20 @@ export function GameProvider({ children }) {
 
   const currentTheme = THEMES[tableTheme] || THEMES.cyberpunk;
 
-  // Local User Identity (Persists across tab closes & reconnects)
+  // Local User Identity per Browser Tab (Enables multiple tabs to be separate players)
   const [user, setUser] = useState(() => {
-    const savedId = localStorage.getItem('poker_user_id') || `user_${Math.random().toString(36).substr(2, 9)}`;
-    const savedName = localStorage.getItem('poker_user_name') || '';
-    const savedAvatar = localStorage.getItem('poker_user_avatar') || 'tiger';
-    localStorage.setItem('poker_user_id', savedId);
+    const savedId = sessionStorage.getItem('poker_user_id') || `user_${Math.random().toString(36).substr(2, 9)}`;
+    const savedName = sessionStorage.getItem('poker_user_name') || '';
+    const savedAvatar = sessionStorage.getItem('poker_user_avatar') || 'tiger';
+    sessionStorage.setItem('poker_user_id', savedId);
     return { id: savedId, name: savedName, avatar: savedAvatar };
   });
 
   const updateUserProfile = (name, avatar) => {
     const updated = { ...user, name, avatar };
     setUser(updated);
-    localStorage.setItem('poker_user_name', name);
-    localStorage.setItem('poker_user_avatar', avatar);
+    sessionStorage.setItem('poker_user_name', name);
+    sessionStorage.setItem('poker_user_avatar', avatar);
   };
 
   // Sound toggle
@@ -148,8 +148,8 @@ export function GameProvider({ children }) {
         if (res.success) {
           if (res.playerId) {
             setUser(prev => ({ ...prev, id: res.playerId, name: res.playerName || prev.name }));
-            localStorage.setItem('poker_user_id', res.playerId);
-            if (res.playerName) localStorage.setItem('poker_user_name', res.playerName);
+            sessionStorage.setItem('poker_user_id', res.playerId);
+            if (res.playerName) sessionStorage.setItem('poker_user_name', res.playerName);
           }
           if (res.isReconnected) {
             setReconnectAlert(`Welcome back, ${res.playerName}! Reconnected to your seat.`);

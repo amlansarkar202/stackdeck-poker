@@ -14,9 +14,8 @@ export default function LobbyView() {
   const [addingBot, setAddingBot] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Mobile Join URL
-  const baseUrl = networkInfo?.phoneJoinUrl || window.location.origin;
-  const joinUrl = `${baseUrl}/join?code=${roomId}`;
+  // Live Invite & QR Join URL (Always uses the exact current domain)
+  const joinUrl = `${window.location.origin}/join?code=${roomId}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(joinUrl);
