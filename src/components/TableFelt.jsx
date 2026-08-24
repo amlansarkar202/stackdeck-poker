@@ -39,9 +39,6 @@ export default function TableFelt({
     currentStreet === 'TURN' ? 4 :
     currentStreet === 'RIVER' || currentStreet === 'SHOWDOWN' || currentStreet === 'HAND_OVER' ? 5 : 0;
 
-  const cardSuits = ['♠', '♥', '♦', '♣', '♠'];
-  const cardRanks = ['A', 'K', 'Q', 'J', '10'];
-
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -96,41 +93,44 @@ export default function TableFelt({
             )}
           </div>
 
-          {/* Minimalist 5-Card Community Board */}
+          {/* 5-Card Community Board Indicators (Shows Flipped Card Design for Physical Games) */}
           <div className="w-full my-1.5 pt-1.5 border-t border-white/10 flex flex-col items-center">
             <div className="flex items-center justify-center gap-1 sm:gap-2">
               {[1, 2, 3, 4, 5].map((cardIdx) => {
                 const isRevealed = cardIdx <= activeCardCount;
-                const suit = cardSuits[cardIdx - 1];
-                const isRedSuit = suit === '♥' || suit === '♦';
 
                 return (
                   <div
                     key={cardIdx}
-                    className={`w-7 h-10 sm:w-10 sm:h-14 rounded-md sm:rounded-lg border flex flex-col items-center justify-between p-0.5 sm:p-1 transition-all duration-300 shadow-sm ${
+                    className={`relative w-7 h-10 sm:w-10 sm:h-14 rounded-md sm:rounded-lg border transition-all duration-300 flex items-center justify-center shadow-sm overflow-hidden ${
                       isRevealed
-                        ? 'bg-slate-100 border-amber-400/80 shadow-amber-500/10 scale-102 ring-1 ring-amber-400/40'
-                        : 'bg-black/50 border-white/10 opacity-30'
+                        ? 'bg-gradient-to-b from-[#1a2333] via-[#0f172a] to-[#080d1a] border-amber-400/90 shadow-md shadow-amber-500/20 scale-102 ring-1 ring-amber-400/40'
+                        : 'bg-black/40 border-dashed border-white/15 opacity-25'
                     }`}
                   >
-                    <span className={`text-[7px] sm:text-[8px] font-bold self-start leading-none ${
-                      isRevealed ? (isRedSuit ? 'text-red-600' : 'text-slate-900') : 'text-transparent'
-                    }`}>
-                      {cardRanks[cardIdx - 1]}
-                    </span>
-                    <span className={`text-xs sm:text-base leading-none ${
-                      isRevealed ? (isRedSuit ? 'text-red-600' : 'text-slate-900') : 'text-slate-700'
-                    }`}>
-                      {isRevealed ? suit : '♠'}
-                    </span>
-                    <span className={`text-[7px] sm:text-[8px] font-bold self-end leading-none ${
-                      isRevealed ? (isRedSuit ? 'text-red-600' : 'text-slate-900') : 'text-transparent'
-                    }`}>
-                      {cardRanks[cardIdx - 1]}
-                    </span>
+                    {isRevealed ? (
+                      /* Elegant Card Back Graphic */
+                      <div className="w-full h-full p-0.5 sm:p-1 flex flex-col items-center justify-center">
+                        <div className="w-full h-full border border-amber-400/30 rounded sm:rounded-md flex items-center justify-center bg-gradient-to-br from-white/5 to-transparent relative">
+                          <div className="w-2.5 h-2.5 sm:w-4 sm:h-4 rotate-45 border border-amber-400/60 flex items-center justify-center bg-amber-500/10">
+                            <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-amber-400/90 rounded-full" />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      /* Empty Slot */
+                      <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
+                    )}
                   </div>
                 );
               })}
+            </div>
+
+            {/* Street Labels */}
+            <div className="flex items-center justify-between w-full max-w-[160px] sm:max-w-[220px] mt-1 text-[8px] sm:text-[9px] text-slate-400 font-semibold px-1">
+              <span className={activeCardCount >= 3 ? 'text-amber-300 font-bold' : 'opacity-40'}>Flop (3)</span>
+              <span className={activeCardCount >= 4 ? 'text-amber-300 font-bold' : 'opacity-40'}>Turn (1)</span>
+              <span className={activeCardCount >= 5 ? 'text-amber-300 font-bold' : 'opacity-40'}>River (1)</span>
             </div>
           </div>
 
