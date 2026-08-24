@@ -46,9 +46,9 @@ export default function PlayerSeat({ player, isSelf = false, onClick = null }) {
         )}
       </div>
 
-      {/* Avatar Container with Glowing Light Ring on Active Turn */}
+      {/* Avatar Container with Glowing Light Ring on Active Turn (Compact for zero overlap) */}
       <div
-        className={`relative z-10 w-11 h-11 sm:w-14 sm:h-14 rounded-full flex items-center justify-center bg-[#111620] border-2 transition-all p-1.5 ${
+        className={`relative z-10 w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-[#111620] border-2 transition-all p-1 sm:p-1.5 ${
           player.isTurn
             ? 'border-amber-300 turn-ring-active'
             : isActuallySelf
@@ -56,7 +56,7 @@ export default function PlayerSeat({ player, isSelf = false, onClick = null }) {
             : crest ? crest.border : 'border-white/15'
         }`}
       >
-        <AvatarIcon id={player.avatar || initials} className="w-6 h-6 sm:w-8 sm:h-8" />
+        <AvatarIcon id={player.avatar || initials} className="w-4.5 h-4.5 sm:w-7 sm:h-7" />
 
         {/* Disconnect indicator */}
         {!player.isConnected && (

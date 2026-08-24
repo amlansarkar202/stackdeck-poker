@@ -57,11 +57,11 @@ export default function TableFelt({
   return (
     <div className="relative w-full max-w-6xl mx-auto flex flex-col items-center select-none py-1 sm:py-2 px-1 sm:px-2">
       
-      {/* Felt Board Container (Extended Length for Multi-Player Spacing) */}
-      <div className={`relative w-full aspect-[1/1] xs:aspect-[5/4] sm:aspect-[16/9] md:aspect-[18/9] min-h-[420px] sm:min-h-[500px] max-h-[580px] rounded-[36px] sm:rounded-[52px] ${themeClass} flex items-center justify-center p-2 sm:p-6 transition-all duration-300`}>
+      {/* Felt Board Container (Expanded Vertical Spacing for Mobile Portrait) */}
+      <div className={`relative w-full aspect-[9/13] xs:aspect-[1/1] sm:aspect-[16/9] md:aspect-[18/9] min-h-[480px] xs:min-h-[500px] sm:min-h-[520px] max-h-[620px] rounded-[36px] sm:rounded-[52px] ${themeClass} flex items-center justify-center p-1 sm:p-6 transition-all duration-300`}>
         
-        {/* Table Center Info Deck */}
-        <div className="relative z-10 flex flex-col items-center text-center p-2 sm:p-3.5 rounded-2xl sm:rounded-3xl bg-black/85 backdrop-blur-xl border border-white/10 shadow-2xl max-w-[190px] sm:max-w-[280px] w-full">
+        {/* Table Center Info Deck (Compact to ensure zero overlap on portrait/mobile) */}
+        <div className="relative z-10 flex flex-col items-center text-center p-1.5 sm:p-3 rounded-2xl sm:rounded-3xl bg-black/85 backdrop-blur-xl border border-white/10 shadow-2xl max-w-[155px] xs:max-w-[175px] sm:max-w-[260px] w-full">
           
           {/* Hand # & Street Phase Badge */}
           <div className="flex items-center gap-1.5 mb-0.5">
@@ -93,7 +93,7 @@ export default function TableFelt({
             )}
           </div>
 
-          {/* 5-Card Community Board Indicators (Shows Flipped Card Design for Physical Games) */}
+          {/* 5-Card Community Board Indicators (Light Color Flip Design) */}
           <div className="w-full my-1.5 pt-1.5 border-t border-white/10 flex flex-col items-center">
             <div className="flex items-center justify-center gap-1 sm:gap-2">
               {[1, 2, 3, 4, 5].map((cardIdx) => {
@@ -102,24 +102,24 @@ export default function TableFelt({
                 return (
                   <div
                     key={cardIdx}
-                    className={`relative w-7 h-10 sm:w-10 sm:h-14 rounded-md sm:rounded-lg border transition-all duration-300 flex items-center justify-center shadow-sm overflow-hidden ${
+                    className={`relative w-6 h-9 sm:w-10 sm:h-14 rounded-md sm:rounded-lg border transition-all duration-300 flex items-center justify-center shadow-sm overflow-hidden ${
                       isRevealed
-                        ? 'bg-gradient-to-b from-[#1a2333] via-[#0f172a] to-[#080d1a] border-amber-400/90 shadow-md shadow-amber-500/20 scale-102 ring-1 ring-amber-400/40'
-                        : 'bg-black/40 border-dashed border-white/15 opacity-25'
+                        ? 'bg-gradient-to-b from-[#ffffff] via-[#f8f6f0] to-[#eae5d8] border-amber-400 shadow-md shadow-amber-400/25 scale-102 ring-1 ring-amber-300'
+                        : 'bg-black/40 border-dashed border-white/20 opacity-30'
                     }`}
                   >
                     {isRevealed ? (
-                      /* Elegant Card Back Graphic */
+                      /* Elegant Light Card Graphic */
                       <div className="w-full h-full p-0.5 sm:p-1 flex flex-col items-center justify-center">
-                        <div className="w-full h-full border border-amber-400/30 rounded sm:rounded-md flex items-center justify-center bg-gradient-to-br from-white/5 to-transparent relative">
-                          <div className="w-2.5 h-2.5 sm:w-4 sm:h-4 rotate-45 border border-amber-400/60 flex items-center justify-center bg-amber-500/10">
-                            <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-amber-400/90 rounded-full" />
+                        <div className="w-full h-full border border-amber-500/40 rounded sm:rounded-md flex items-center justify-center bg-gradient-to-br from-amber-50/80 to-amber-100/60 relative">
+                          <div className="w-2.5 h-2.5 sm:w-4.5 sm:h-4.5 rotate-45 border-2 border-amber-500/70 flex items-center justify-center bg-amber-200/50 shadow-xs">
+                            <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-amber-600 rounded-full" />
                           </div>
                         </div>
                       </div>
                     ) : (
                       /* Empty Slot */
-                      <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
                     )}
                   </div>
                 );
@@ -127,7 +127,7 @@ export default function TableFelt({
             </div>
 
             {/* Street Labels */}
-            <div className="flex items-center justify-between w-full max-w-[160px] sm:max-w-[220px] mt-1 text-[8px] sm:text-[9px] text-slate-400 font-semibold px-1">
+            <div className="flex items-center justify-between w-full max-w-[150px] sm:max-w-[220px] mt-1 text-[8px] sm:text-[9px] text-slate-400 font-semibold px-1">
               <span className={activeCardCount >= 3 ? 'text-amber-300 font-bold' : 'opacity-40'}>Flop (3)</span>
               <span className={activeCardCount >= 4 ? 'text-amber-300 font-bold' : 'opacity-40'}>Turn (1)</span>
               <span className={activeCardCount >= 5 ? 'text-amber-300 font-bold' : 'opacity-40'}>River (1)</span>
@@ -182,8 +182,8 @@ export default function TableFelt({
         {players.map((player, idx) => {
           const totalPlayers = players.length;
           const angle = (idx / totalPlayers) * 2 * Math.PI + Math.PI / 2;
-          const radiusX = totalPlayers <= 4 ? 40 : 43;
-          const radiusY = totalPlayers <= 4 ? 36 : 39;
+          const radiusX = totalPlayers <= 4 ? 41 : 44;
+          const radiusY = totalPlayers <= 4 ? 40 : 43;
           const x = 50 + radiusX * Math.cos(angle);
           const y = 50 + radiusY * Math.sin(angle);
 
