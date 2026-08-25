@@ -4,15 +4,13 @@ WORKDIR /app
 
 # Copy package files and install dependencies
 COPY package*.json ./
-RUN npm install --production
+RUN npm install
 
-# Copy application files and pre-built assets
+# Copy source files and build React dist
 COPY . .
+RUN node ./node_modules/vite/bin/vite.js build
 
-# Expose standard port
-ENV PORT=3001
 ENV NODE_ENV=production
-EXPOSE 3001
 
 # Start production server
 CMD ["node", "server/index.js"]
