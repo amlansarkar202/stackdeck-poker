@@ -67,6 +67,8 @@ app.get('/api/room/:roomId', (req, res) => {
     smallBlind: room.engine.smallBlind,
     bigBlind: room.engine.bigBlind,
     startingStack: room.engine.startingStack,
+    takenAvatars: room.engine.players.map(p => p.avatar),
+    players: room.engine.players.map(p => ({ id: p.id, name: p.name, avatar: p.avatar })),
   });
 });
 

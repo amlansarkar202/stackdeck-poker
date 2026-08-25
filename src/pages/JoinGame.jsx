@@ -13,6 +13,7 @@ export default function JoinGame() {
   const [code, setCode] = useState(searchParams.get('code')?.toUpperCase() || '');
   const [name, setName] = useState(user.name || '');
   const [avatar, setAvatar] = useState(user.avatar || 'dragon');
+  const [roomPlayers, setRoomPlayers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -23,15 +24,52 @@ export default function JoinGame() {
     }
   }, [searchParams]);
 
+  // Fetch room players & taken avatars
+  useEffect(() => {
+    const cleanCode = code.trim().toUpperCase();
+    if (cleanCode.length >= 3) {
+      fetch(`/api/room/${cleanCode}`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data?.players) {
+            setRoomPlayers(data.players);
+          } else {
+            setRoomPlayers([]);
+          }
+        })
+        .catch(() => setRoomPlayers([]));
+    } else {
+      setRoomPlayers([]);
+    }
+  }, [code]);
+
+  // Auto-switch avatar if current default is already taken in this room
+  useEffect(() => {
+    if (roomPlayers.length > 0) {
+      const cleanName = name.trim().toLowerCase();
+      const takenSet = new Set(
+        roomPlayers
+          .filter(p => !cleanName || p.name.trim().toLowerCase() !== cleanName)
+          .map(p => p.avatar)
+      );
+
+      if (takenSet.has(avatar)) {
+        const firstAvailable = AVATAR_CRESTS.find(c => !takenSet.has(c.id));
+        if (firstAvailable) setAvatar(firstAvailable.id);
+      }
+    }
+  }, [roomPlayers, name]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const cleanCode = code.trim().toUpperCase();
+    const cleanName = name.trim();
 
     if (!cleanCode) {
       setErrorMsg('Please enter a 4-letter Room Code');
       return;
     }
-    if (!name.trim()) {
+    if (!cleanName) {
       setErrorMsg('Please enter your nickname');
       return;
     }
@@ -39,10 +77,10 @@ export default function JoinGame() {
     setLoading(true);
     setErrorMsg('');
 
-    updateUserProfile(name.trim(), avatar);
+    updateUserProfile(cleanName, avatar);
 
     try {
-      const roomId = await joinRoom(cleanCode, null, name.trim(), avatar);
+      const roomId = await joinRoom(cleanCode, null, cleanName, avatar);
       navigate(`/room/${roomId}`);
     } catch (err) {
       setErrorMsg(err.message || 'Failed to join room. Please check the room code.');
@@ -109,7 +147,7 @@ export default function JoinGame() {
               </p>
             </div>
 
-            {/* Vector Insignia / Crest Picker */}
+            {/* Vector Insignia / Crest Picker (Taken Avatars Darkened Out) */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-xs font-semibold text-slate-300">
@@ -123,18 +161,30 @@ export default function JoinGame() {
               <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 bg-black/50 p-2.5 rounded-xl border border-white/10">
                 {AVATAR_CRESTS.map((crest) => {
                   const isSelected = avatar === crest.id;
+                  const existingOwner = roomPlayers.find(p => p.avatar === crest.id);
+                  const isMyOwnCrest = existingOwner && name.trim() && existingOwner.name.trim().toLowerCase() === name.trim().toLowerCase();
+                  const isTaken = !!existingOwner && !isMyOwnCrest;
+
                   return (
                     <button
                       type="button"
                       key={crest.id}
-                      onClick={() => setAvatar(crest.id)}
-                      className={`relative p-2 rounded-xl border transition-all flex flex-col items-center justify-center cursor-pointer ${
-                        isSelected
-                          ? `bg-black/80 ${crest.border} ring-2 ring-amber-400/80 scale-105 shadow-lg`
-                          : 'bg-black/30 border-white/10 hover:border-white/20 hover:scale-102 opacity-75 hover:opacity-100'
+                      disabled={isTaken}
+                      onClick={isTaken ? undefined : () => setAvatar(crest.id)}
+                      className={`relative p-2 rounded-xl border transition-all flex flex-col items-center justify-center ${
+                        isTaken
+                          ? 'bg-black/90 border-white/5 opacity-25 grayscale cursor-not-allowed'
+                          : isSelected
+                          ? `bg-black/80 ${crest.border} ring-2 ring-amber-400/80 scale-105 shadow-lg cursor-pointer`
+                          : 'bg-black/30 border-white/10 hover:border-white/20 hover:scale-102 opacity-75 hover:opacity-100 cursor-pointer'
                       }`}
-                      title={`${crest.name} (${crest.tag})`}
+                      title={isTaken ? `${crest.name} (Taken by ${existingOwner.name})` : `${crest.name} (${crest.tag})`}
                     >
+                      {isTaken && (
+                        <span className="absolute -top-1 -right-1 bg-red-950 text-red-400 text-[7px] font-bold px-1 rounded border border-red-500/30">
+                          Taken
+                        </span>
+                      )}
                       <div className="w-8 h-8 flex items-center justify-center">
                         {crest.svg}
                       </div>

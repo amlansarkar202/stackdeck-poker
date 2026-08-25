@@ -93,11 +93,19 @@ export class GameManager {
         throw new Error('This game has already started and is locked to new players. Only existing players can reconnect.');
       }
 
-      // New Player Entry
+      // New Player Entry: Ensure avatar is unique if possible
+      const allAvatars = ['tiger', 'dragon', 'phoenix', 'eagle', 'wolf', 'lion', 'shark', 'reaper', 'crown', 'ace'];
+      const usedAvatars = new Set(room.engine.players.map(p => p.avatar));
+      let chosenAvatar = playerData.avatar;
+      if (usedAvatars.has(chosenAvatar)) {
+        const available = allAvatars.find(a => !usedAvatars.has(a));
+        if (available) chosenAvatar = available;
+      }
+
       activePlayer = room.engine.addPlayer({
         id: playerData.id,
         name: inputName,
-        avatar: playerData.avatar,
+        avatar: chosenAvatar || playerData.avatar || 'tiger',
         stack: playerData.stack || room.engine.startingStack,
       });
     }
