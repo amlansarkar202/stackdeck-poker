@@ -120,12 +120,18 @@ export function GameProvider({ children }) {
   }, [user.id]);
 
   // --- ACTIONS ---
-  const createRoom = (config) => {
+  const createRoom = (config, customHostData = null) => {
     return new Promise((resolve, reject) => {
       if (!socket) return reject(new Error('Socket not connected'));
-      socket.emit('create_room', { hostData: user, config }, (res) => {
+      const activeHost = customHostData ? { ...user, ...customHostData } : user;
+      
+      socket.emit('create_room', { hostData: activeHost, config }, (res) => {
         if (res.success) {
-          const profile = { id: user.id, name: user.name, avatar: user.avatar };
+          const profile = { id: activeHost.id, name: activeHost.name, avatar: activeHost.avatar };
+          setUser(profile);
+          sessionStorage.setItem('poker_user_id', profile.id);
+          sessionStorage.setItem('poker_user_name', profile.name);
+          sessionStorage.setItem('poker_user_avatar', profile.avatar);
           localStorage.setItem(`poker_player_${res.roomId}`, JSON.stringify(profile));
           sessionStorage.setItem(`poker_player_${res.roomId}`, JSON.stringify(profile));
           if (res.state) setGameState(res.state);

@@ -21,7 +21,8 @@ export default function CreateGame() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name.trim()) {
+    const cleanName = name.trim();
+    if (!cleanName) {
       setErrorMsg('Please enter your nickname');
       return;
     }
@@ -29,7 +30,7 @@ export default function CreateGame() {
     setLoading(true);
     setErrorMsg('');
 
-    updateUserProfile(name.trim(), avatar);
+    updateUserProfile(cleanName, avatar);
 
     try {
       const roomId = await createRoom({
@@ -38,8 +39,8 @@ export default function CreateGame() {
         startingStack: Number(startingStack),
         ante: Number(ante),
         blindTimerMinutes: Number(blindTimer),
-        roomName: `${name}'s Game`,
-      });
+        roomName: `${cleanName}'s Game`,
+      }, { name: cleanName, avatar });
 
       navigate(`/room/${roomId}`);
     } catch (err) {
