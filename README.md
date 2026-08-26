@@ -1,35 +1,47 @@
-# 🎲 PokerChip - Digital Poker Chips for Home Games
+# ♠️ StackDeck — Real-Time Digital Poker Engine & Chip Tracker
 
-A complete, free, real-time poker chip management web application modeled after **[pokerchip.app](https://pokerchip.app)**.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/Node.js-v20-green.svg)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/React-v18-61DAFB.svg)](https://reactjs.org/)
+[![Socket.io](https://img.shields.io/badge/Socket.io-Real--Time-black.svg)](https://socket.io/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC.svg)](https://tailwindcss.com/)
+[![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED.svg)](https://www.docker.com/)
 
-Designed for live, in-person poker games where players use a physical deck of cards, but track all chips, bets, blinds, turns, side pots, and payouts digitally on their smartphones.
+A modern, high-performance, real-time poker chip management platform and authoritative Texas Hold'em game engine. Built for live, in-person home games where players use a physical deck of cards and track all chip stacks, betting streets, blinds, side pots, loans, and settlements digitally on their smartphones with zero downloads required.
 
 ---
 
-## ✨ Features
+## 🌟 Key Architecture & Features
 
-- **📱 Phone-Based Play**: Every player joins and acts from their own phone browser with zero downloads required.
-- **⚡ Instant Real-Time Sync**: Powered by WebSockets (Socket.io) for instantaneous updates across all connected devices.
-- **🎯 Full Texas Hold'em Engine**:
-  - Automatic Dealer Button rotation (`D`), Small Blind (`SB`), and Big Blind (`BB`) postings.
-  - Full betting streets: **Pre-flop ➡️ Flop ➡️ Turn ➡️ River ➡️ Showdown**.
-  - Actions: **Fold**, **Check**, **Call**, **Raise** (with presets: `Min`, `2.5x`, `3x`, `Pot`, `All-in`), and **All-In**.
-  - **Dynamic Multi-Level Side Pots**: Automatically calculates main and side pots for uneven all-in stack amounts.
-- **🏆 Showdown & Pot Distribution**:
-  - Select single or multiple winners per pot with automatic split pot calculation and odd chip allocation.
-  - Confetti celebration!
-- **🔊 Built-In Sound Synthesizer**: Realistic ceramic poker chip clinks, turn alerts, check knocks, fold swooshes, and victory chimes via the Web Audio API.
-- **↩️ Activity Log & Undo**: Full chronological hand history with a one-click **Undo Last Action** button.
-- **⚙️ Host Controls**:
-  - Rebuy / Add chips
-  - Edit stack balances
-  - Configurable blind timers with audio alert on blind level-ups
-  - Kick disconnected / idle players
-- **📲 QR Code & Local Wi-Fi Sharing**: Host screen displays a scannable QR code and link for friends on the same Wi-Fi.
-- **💰 Cash Game Settlement Calculator (`/settlement`)**:
-  - Standalone or post-game ledger calculator.
-  - Calculates the minimum number of direct transfers to settle all player buy-ins and cash-outs.
-  - One-click copy for WhatsApp/group chat.
+### ⚡ 1. Real-Time Distributed Synchronization
+- **Duplex Event Architecture**: Powered by **Socket.io (WebSockets)** for sub-millisecond table updates across all connected mobile and desktop devices.
+- **Fault-Tolerant Session Reconnection**: Decoupled player identities from transient socket handshakes. Automatically preserves seat assignments, chip balances, and turn actions across browser refreshes or network drops.
+- **Room Isolation**: Isolated game room namespaces (`socket.join`) supporting concurrent games with live player count inspection.
+
+### 🎰 2. Authoritative Texas Hold'em Game Engine
+- **Deterministic State Machine**: Strictly enforces street progression (**Pre-Flop ➡️ Flop ➡️ Turn ➡️ River ➡️ Showdown ➡️ Hand Complete**).
+- **Algorithmic Multi-Tier Side Pots**: Automatically calculates and separates complex main and side pots for multiple simultaneous all-in players with uneven chip stacks.
+- **Action Validation**: Authoritative server validation for **Fold**, **Check**, **Call**, **Raise**, and **All-In** with dynamic min-raise arithmetic.
+- **Loan & Sit-Out Engine**: Supports player loans with automated 1-hand sit-out penalties and double-repayment debt triggers.
+- **Historical Snapshotting & Undo**: Allows table hosts to roll back actions or misclicks seamlessly without corrupting pot mathematics.
+
+### 📱 3. Responsive UI / UX
+- **Mobile-First Elliptical Felt**: Trigonometrically positioned player seats with dynamic anti-overlap geometry for both portrait smartphones and widescreen displays.
+- **2x2 Action Layout**: Ergonomic button layout designed for one-handed mobile play.
+- **Web Audio Sound Synthesizer**: Realistic ceramic poker chip clinks, turn alerts, check knocks, fold swooshes, and victory chimes.
+- **Custom Insignia Avatars**: 10 distinct vector player crests with real-time taken-avatar exclusivity.
+
+### 💰 4. Cash Game Debt Settlement Calculator (`/settlement`)
+- Standalone transaction minimization ledger calculating the optimal minimum number of direct transfers to settle all player buy-ins and cash-outs.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React 18, Vite, Tailwind CSS, Lucide Icons, Canvas Confetti, Web Audio API
+- **Backend**: Node.js, Express, Socket.io
+- **DevOps & Cloud**: Docker (Node 20 Alpine), Railway Cloud CI/CD
+- **Testing**: Node.js Automated Test Suite (`server/testFullSuite.js`)
 
 ---
 
@@ -37,41 +49,50 @@ Designed for live, in-person poker games where players use a physical deck of ca
 
 ### 1. Prerequisites
 - **Node.js** (v18 or higher recommended)
-- **npm** (or yarn/pnpm)
+- **npm** (or yarn / pnpm)
 
-### 2. Install Dependencies
+### 2. Installation
 ```bash
+git clone https://github.com/amlansarkar202/stackdeck-poker.git
+cd stackdeck-poker
 npm install
 ```
 
 ### 3. Run in Development Mode
-To start both the backend server (port 3001) and Vite frontend (port 5173):
+Starts both the Express WebSocket server (`localhost:3001`) and Vite frontend (`localhost:5173`):
 ```bash
 npm start
 ```
-
-- **Host on Computer**: Open `http://localhost:5173`
-- **Join from Phones on Wi-Fi**: Open `http://<your-local-ip>:5173` or scan the QR Code on the host's screen!
+- Open `http://localhost:5173` in your browser.
+- Share your local network IP (`http://<your-ip>:5173`) with other devices on your Wi-Fi to test multiplayer.
 
 ---
 
-## 🧪 Testing the Poker Engine
+## 🧪 Automated Testing
 
-To run the automated unit test suite (verifying blinds, side pots, all-ins, split pots, and undo):
+To run the comprehensive 6-suite integration test verifying 5-street progression, all-in side pots, walkovers, loan sit-outs, and disconnect recovery:
+
 ```bash
 npm test
 ```
 
 ---
 
-## 📦 Production Deployment
+## 🐳 Docker & Production Deployment
 
-Build the optimized production assets:
+### Build and Run with Docker
 ```bash
-npm run build
+# Build Docker image
+docker build -t stackdeck-poker .
+
+# Run container
+docker run -p 3001:3001 stackdeck-poker
 ```
 
-Run the unified production server (serves both API and frontend on port 3001 or `$PORT`):
-```bash
-npm run serve
-```
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+Developed with ❤️ by **Amlan Sarkar**.
