@@ -33,6 +33,8 @@ export default function Table() {
     }
   }, [gameState?.currentStreet, isHost]);
 
+  const [reconnectError, setReconnectError] = useState(null);
+
   // Auto-join & reconnect seamlessly if user refreshed or navigated directly
   useEffect(() => {
     if (!routeRoomId) return;
@@ -51,6 +53,9 @@ export default function Table() {
       if (joinName) {
         joinRoom(cleanCode, 1000, joinName).catch((err) => {
           console.warn('[Table] Reconnection retry pending:', err);
+          setReconnectError(err.message || 'Room not found or no longer active');
+          sessionStorage.removeItem('poker_active_room');
+          localStorage.removeItem(`poker_player_${cleanCode}`);
         });
       } else {
         navigate(`/join?code=${cleanCode}`);
@@ -62,20 +67,35 @@ export default function Table() {
     return (
       <div className={`min-h-screen ${currentTheme.pageBg} flex flex-col items-center justify-center p-4 text-center`}>
         <div className="text-3xl mb-2 animate-bounce">♠️</div>
-        <h2 className="text-lg font-bold text-white mb-1">Connecting to Table {routeRoomId}...</h2>
-        <p className="text-xs text-slate-400 mb-4">Syncing table state over network</p>
+        <h2 className="text-lg font-bold text-white mb-1">
+          {reconnectError ? 'Table Not Found' : `Connecting to Table ${routeRoomId || ''}...`}
+        </h2>
+        <p className="text-xs text-slate-400 mb-4 max-w-sm">
+          {reconnectError
+            ? `Room ${routeRoomId || ''} does not exist or expired after a server restart. Please check the code or join a new room.`
+            : 'Syncing table state over network'}
+        </p>
         <div className="flex gap-2">
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-all cursor-pointer"
-          >
-            Retry Connection
-          </button>
+          {!reconnectError ? (
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-all cursor-pointer"
+            >
+              Retry Connection
+            </button>
+          ) : (
+            <Link
+              to="/"
+              className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-all"
+            >
+              Back to Home
+            </Link>
+          )}
           <Link
             to={`/join?code=${routeRoomId || ''}`}
             className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-all"
           >
-            Join / Change Name
+            Join with Code
           </Link>
         </div>
       </div>
