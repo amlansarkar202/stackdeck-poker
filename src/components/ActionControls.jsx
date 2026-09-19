@@ -268,73 +268,73 @@ export default function ActionControls() {
         {/* PRIMARY ACTION BUTTONS: 2 ABOVE (Fold | Call/Check), 2 BELOW (Raise | All-In) */}
         <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
           
-          {/* Row 1, Left: FOLD (Red) */}
+          {/* Row 1, Left: FOLD (Matte Clean Red) */}
           <button
             type="button"
             onClick={() => sendAction('fold')}
-            className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-gradient-to-b from-red-800 to-red-950 border border-red-500/50 hover:border-red-400 text-red-100 font-bold shadow active:scale-98 transition-all cursor-pointer"
+            className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-[#d32f2f] hover:bg-[#c62828] text-white font-bold text-sm sm:text-base shadow border border-red-900/30 active:scale-98 transition-all cursor-pointer"
           >
-            <XCircle className="w-4 h-4 text-red-400" />
-            <span className="text-xs sm:text-sm uppercase tracking-wider font-extrabold">Fold</span>
+            <XCircle className="w-4 h-4 text-white/90" />
+            <span className="tracking-wide">Fold</span>
           </button>
 
-          {/* Row 1, Right: CHECK / CALL (Green) */}
+          {/* Row 1, Right: CHECK / CALL (Matte Clean Green) */}
           {canCheck ? (
             <button
               type="button"
               onClick={() => sendAction('check')}
-              className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-gradient-to-b from-emerald-600 to-emerald-750 border border-emerald-400/60 hover:border-emerald-300 text-white font-bold shadow active:scale-98 transition-all cursor-pointer"
+              className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold text-sm sm:text-base shadow border border-green-900/30 active:scale-98 transition-all cursor-pointer"
             >
-              <CheckCircle2 className="w-4 h-4 text-emerald-200" />
-              <span className="text-xs sm:text-sm uppercase tracking-wider font-extrabold">Check</span>
+              <CheckCircle2 className="w-4 h-4 text-white/90" />
+              <span className="tracking-wide">Check</span>
             </button>
           ) : (
             <button
               type="button"
               onClick={() => sendAction('call')}
-              className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-gradient-to-b from-emerald-600 to-emerald-750 border border-emerald-400/60 hover:border-emerald-300 text-white font-bold shadow active:scale-98 transition-all cursor-pointer"
+              className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold text-sm sm:text-base shadow border border-green-900/30 active:scale-98 transition-all cursor-pointer"
             >
-              <CheckCircle2 className="w-4 h-4 text-emerald-200" />
-              <span className="text-xs sm:text-sm uppercase tracking-wider font-extrabold">
+              <CheckCircle2 className="w-4 h-4 text-white/90" />
+              <span className="tracking-wide">
                 Call ${actualCallAmount.toLocaleString()}
               </span>
             </button>
           )}
 
-          {/* Row 2, Left: RAISE / BET (Blue) */}
+          {/* Row 2, Left: RAISE / BET (Matte Clean Royal Blue) */}
           {canRaise ? (
             <button
               type="button"
               onClick={() => setIsRaiseOpen(!isRaiseOpen)}
-              className={`flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl font-extrabold shadow active:scale-98 transition-all cursor-pointer border ${
+              className={`flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl font-bold text-sm sm:text-base shadow border active:scale-98 transition-all cursor-pointer ${
                 isRaiseOpen
-                  ? 'bg-blue-500 text-white border-white ring-2 ring-blue-300'
-                  : 'bg-gradient-to-b from-blue-600 to-blue-750 hover:from-blue-500 hover:to-blue-600 text-white border-blue-400/60'
+                  ? 'bg-[#1565c0] text-white border-white ring-2 ring-blue-300'
+                  : 'bg-[#1976d2] hover:bg-[#1565c0] text-white border-blue-900/30'
               }`}
             >
-              <ArrowUpRight className="w-4 h-4 text-blue-200" />
-              <span className="text-xs sm:text-sm uppercase tracking-wider">
-                {currentBet === 0 ? 'Bet...' : 'Raise...'}
+              <ArrowUpRight className="w-4 h-4 text-white/90" />
+              <span className="tracking-wide">
+                {currentBet === 0 ? 'Bet' : 'Raise'}
               </span>
             </button>
           ) : (
             <button
               disabled
-              className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-gray-900 text-gray-600 font-bold text-xs border border-white/5 cursor-not-allowed opacity-40"
+              className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-gray-900 text-gray-600 font-bold text-sm border border-white/5 cursor-not-allowed opacity-40"
             >
               <ArrowUpRight className="w-4 h-4 opacity-30" />
-              <span className="text-xs uppercase tracking-wider">Raise</span>
+              <span className="tracking-wide">Raise</span>
             </button>
           )}
 
-          {/* Row 2, Right: ALL-IN (Yellow-Orange Gold) */}
+          {/* Row 2, Right: ALL-IN (Matte Clean Gold/Yellow) */}
           <button
             type="button"
             onClick={handleDirectAllIn}
-            className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-gradient-to-b from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 border border-amber-300 text-gray-950 font-black shadow active:scale-98 transition-all cursor-pointer"
+            className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-[#fbc02d] hover:bg-[#f9a825] text-gray-950 font-black text-sm sm:text-base shadow border border-yellow-700/30 active:scale-98 transition-all cursor-pointer"
           >
-            <span className="text-xs sm:text-sm uppercase tracking-wider font-black">
-              All-In (${maxTargetBet.toLocaleString()})
+            <span className="tracking-wide">
+              All In (${maxTargetBet.toLocaleString()})
             </span>
           </button>
 
