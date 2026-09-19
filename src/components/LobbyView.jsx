@@ -5,7 +5,7 @@ import { Play, Users, ArrowUp, ArrowDown, UserX, Copy, Check, QrCode, Shield, Us
 import { AvatarIcon } from './AvatarIcon';
 
 export default function LobbyView() {
-  const { gameState, user, startGame, reorderPlayers, kickPlayer, addTestPlayer, networkInfo } = useGame();
+  const { gameState, user, startGame, reorderPlayers, kickPlayer, addTestPlayer, networkInfo, currentTheme } = useGame();
   const { roomId, hostId, players = [], smallBlind, bigBlind, ante, startingStack, blindTimerMinutes } = gameState || {};
 
   const isHost = hostId === user.id;
@@ -69,17 +69,17 @@ export default function LobbyView() {
     <div className="w-full max-w-3xl mx-auto px-4 py-6 flex flex-col gap-5 animate-fade-in">
       
       {/* Top Banner: Room Code & Game Info */}
-      <div className="bg-[#111620]/90 backdrop-blur-xl rounded-2xl p-5 sm:p-6 border border-white/10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-5">
+      <div className={`${currentTheme.cardBg} backdrop-blur-xl rounded-2xl p-5 sm:p-6 border shadow-2xl flex flex-col md:flex-row items-center justify-between gap-5`}>
         
         {/* Left: Room & Blinds info */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            <span className={`w-2 h-2 rounded-full ${currentTheme.accentBg} ${currentTheme.accentText} animate-pulse`} />
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Pre-Game Lobby</span>
           </div>
           
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            Room Code: <span className="text-amber-300 font-mono tracking-wider">{roomId}</span>
+            Room Code: <span className={`${currentTheme.accentTextLight} font-mono tracking-wider`}>{roomId}</span>
           </h1>
 
           <p className="text-xs text-slate-400 mt-1">
@@ -129,11 +129,11 @@ export default function LobbyView() {
       )}
 
       {/* Main Seating Arrangement Panel */}
-      <div className="bg-[#111620]/90 backdrop-blur-xl rounded-2xl p-5 sm:p-6 border border-white/10 shadow-2xl flex flex-col gap-4">
+      <div className={`${currentTheme.cardBg} backdrop-blur-xl rounded-2xl p-5 sm:p-6 border shadow-2xl flex flex-col gap-4`}>
         
         <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/10">
           <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-amber-400" />
+            <Users className={`w-4 h-4 ${currentTheme.accentText}`} />
             <h2 className="text-base font-bold text-white">
               Seating Arrangement ({players.length} Seated)
             </h2>
@@ -168,7 +168,7 @@ export default function LobbyView() {
                 key={player.id}
                 className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
                   isMe
-                    ? 'bg-black/40 border-amber-400/50 shadow-sm ring-1 ring-amber-400/30'
+                    ? currentTheme.lobbySeatedMe
                     : 'bg-black/25 border-white/10 hover:bg-black/35'
                 }`}
               >
@@ -188,7 +188,7 @@ export default function LobbyView() {
                         {player.name} {isMe && '(You)'}
                       </span>
                       {isPlayerHost && (
-                        <span className="text-[9px] font-bold uppercase bg-amber-500/15 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/30">
+                        <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded border ${currentTheme.hostBadge}`}>
                           Host
                         </span>
                       )}

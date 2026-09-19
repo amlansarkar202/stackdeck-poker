@@ -11,7 +11,7 @@ export default function TableFelt({
   onShowdownClick,
   isHost,
 }) {
-  const { tableTheme } = useGame();
+  const { tableTheme, currentTheme } = useGame();
   const {
     players = [],
     pots = [],
@@ -60,21 +60,21 @@ export default function TableFelt({
       {/* Felt Board Container (Expanded Vertical Spacing for Mobile Portrait) */}
       <div className={`relative w-full aspect-[9/13] xs:aspect-[1/1] sm:aspect-[16/9] md:aspect-[18/9] min-h-[480px] xs:min-h-[500px] sm:min-h-[520px] max-h-[620px] rounded-[36px] sm:rounded-[52px] ${themeClass} flex items-center justify-center p-1 sm:p-6 transition-all duration-300`}>
         
-        {/* Table Center Info Deck (Compact to ensure zero overlap on portrait/mobile) */}
-        <div className="relative z-10 flex flex-col items-center text-center p-1.5 sm:p-3 rounded-2xl sm:rounded-3xl bg-[#030a05]/92 backdrop-blur-xl border border-emerald-500/25 shadow-2xl max-w-[155px] xs:max-w-[175px] sm:max-w-[260px] w-full">
+        {/* Table Center Info Deck (High-Contrast Matte Obsidian Glass, No Camouflage) */}
+        <div className={`relative z-10 flex flex-col items-center text-center p-1.5 sm:p-3 rounded-2xl sm:rounded-3xl ${currentTheme.cardDeckBg} backdrop-blur-xl shadow-2xl max-w-[155px] xs:max-w-[175px] sm:max-w-[260px] w-full border`}>
           
           {/* Hand # & Street Phase Badge */}
           <div className="flex items-center gap-1.5 mb-0.5">
             <span className="text-[10px] sm:text-[11px] font-semibold text-slate-400">#{handNumber}</span>
-            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-500/30">
+            <span className={`text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-black/60 ${currentTheme.accentTextLight} border ${currentTheme.accentBorder}`}>
               {streetLabels[currentStreet] || currentStreet}
             </span>
           </div>
 
           {/* Main Pot & Side Pots Display */}
           <div className="my-0.5">
-            <div className="text-[9px] sm:text-[10px] font-bold text-emerald-400/80 uppercase tracking-widest">Total Pot</div>
-            <div className="text-2xl sm:text-4xl font-black text-amber-300 tracking-tight filter drop-shadow">
+            <div className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Pot</div>
+            <div className={`text-2xl sm:text-4xl font-black ${currentTheme.potColor} tracking-tight filter drop-shadow`}>
               ${totalPot.toLocaleString()}
             </div>
 
@@ -84,7 +84,7 @@ export default function TableFelt({
                 {pots.map((pot, idx) => (
                   <span
                     key={idx}
-                    className="text-[9px] font-bold bg-emerald-950/60 text-slate-200 px-1.5 py-0.5 rounded border border-emerald-500/20"
+                    className="text-[9px] font-bold bg-black/60 text-slate-200 px-1.5 py-0.5 rounded border border-white/10"
                   >
                     {pot.name}: ${pot.amount.toLocaleString()}
                   </span>

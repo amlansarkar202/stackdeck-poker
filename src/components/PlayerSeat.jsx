@@ -4,7 +4,7 @@ import { AvatarIcon, AVATAR_CRESTS } from './AvatarIcon';
 import { useGame } from '../context/GameContext';
 
 export default function PlayerSeat({ player, isSelf = false, onClick = null }) {
-  const { user } = useGame();
+  const { user, currentTheme } = useGame();
   if (!player) return null;
 
   const isActuallySelf = isSelf || (player.id === user?.id) || (user?.name && player.name && player.name.trim().toLowerCase() === user?.name.trim().toLowerCase());
@@ -46,13 +46,13 @@ export default function PlayerSeat({ player, isSelf = false, onClick = null }) {
         )}
       </div>
 
-      {/* Avatar Container with Glowing Light Ring on Active Turn (Compact for zero overlap) */}
+      {/* Avatar Container with Glowing Light Ring on Active Turn */}
       <div
-        className={`relative z-10 w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-[#111620] border-2 transition-all p-1 sm:p-1.5 ${
+        className={`relative z-10 w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-[#0d1210] border-2 transition-all p-1 sm:p-1.5 ${
           player.isTurn
-            ? 'border-amber-300 turn-ring-active'
+            ? `${currentTheme.turnRing} turn-ring-active`
             : isActuallySelf
-            ? 'border-emerald-500/80'
+            ? `${currentTheme.accentBorder} ring-1 ${currentTheme.accentRing}`
             : crest ? crest.border : 'border-white/15'
         }`}
       >
@@ -83,21 +83,21 @@ export default function PlayerSeat({ player, isSelf = false, onClick = null }) {
         )}
       </div>
 
-      {/* Player Name & Stack Card (Clean layout, NO OVERLAPPING) */}
+      {/* Player Name & Stack Card */}
       <div className="mt-1.5 flex flex-col items-center max-w-[85px] sm:max-w-[110px] z-10">
         <span
           className={`text-[10px] sm:text-xs truncate w-full text-center px-2 py-0.5 rounded-md font-bold transition-all ${
             player.isTurn
-              ? 'bg-amber-400 text-gray-950 shadow-md ring-1 ring-amber-200'
+              ? currentTheme.turnBadge
               : isActuallySelf
-              ? 'bg-black/70 text-emerald-400 border border-emerald-500/40'
-              : 'bg-black/70 text-slate-200 border border-white/10'
+              ? `bg-black/75 ${currentTheme.accentText} border ${currentTheme.accentBorder}`
+              : 'bg-black/75 text-slate-200 border border-white/10'
           }`}
         >
           {player.name} {isActuallySelf && '(You)'}
         </span>
-        <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-black/80 border border-white/10 shadow mt-0.5">
-          <span className="text-[9px] text-amber-400 font-bold">$</span>
+        <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-black/85 border border-white/10 shadow mt-0.5">
+          <span className={`text-[9px] ${currentTheme.accentText} font-bold`}>$</span>
           <span className="text-[9px] sm:text-xs font-bold text-white tracking-wide">
             {player.stack.toLocaleString()}
           </span>
@@ -106,7 +106,7 @@ export default function PlayerSeat({ player, isSelf = false, onClick = null }) {
 
       {/* Active Bet on Felt */}
       {player.roundBet > 0 && (
-        <div className="mt-1 flex items-center gap-0.5 bg-amber-400 text-gray-950 font-black text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full shadow border border-amber-200 ring-1 ring-black/60 z-10">
+        <div className={`mt-1 flex items-center gap-0.5 ${currentTheme.chipBadge} font-black text-[9px] sm:text-[10px] px-2.5 py-0.5 rounded-full shadow-md z-10`}>
           <span>${player.roundBet.toLocaleString()}</span>
         </div>
       )}
