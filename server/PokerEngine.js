@@ -185,6 +185,7 @@ export class PokerEngine {
   rebuy(playerId, amount) {
     const playerIdx = this.getPlayerIndex(playerId);
     if (playerIdx === -1) return false;
+    this.saveStateSnapshot();
     const player = this.players[playerIdx];
     player.stack += Number(amount);
     player.totalBuyIn = (player.totalBuyIn || 0) + Number(amount);
@@ -198,6 +199,7 @@ export class PokerEngine {
   editStack(playerId, newStack) {
     const playerIdx = this.getPlayerIndex(playerId);
     if (playerIdx === -1) return false;
+    this.saveStateSnapshot();
     const player = this.players[playerIdx];
     const diff = Number(newStack) - player.stack;
     player.stack = Number(newStack);
@@ -209,6 +211,7 @@ export class PokerEngine {
   toggleSitOutNextHand(playerId, targetState = null) {
     const playerIdx = this.getPlayerIndex(playerId);
     if (playerIdx === -1) throw new Error('Player not found');
+    this.saveStateSnapshot();
     const player = this.players[playerIdx];
 
     const newState = targetState !== null ? Boolean(targetState) : !player.sitOutNextHand;
@@ -231,6 +234,7 @@ export class PokerEngine {
   takeLoan(playerId, customAmount = null) {
     const playerIdx = this.getPlayerIndex(playerId);
     if (playerIdx === -1) throw new Error('Player not found');
+    this.saveStateSnapshot();
     const player = this.players[playerIdx];
 
     const loanAmt = Number(customAmount) > 0 ? Number(customAmount) : this.startingStack;
@@ -249,6 +253,7 @@ export class PokerEngine {
   repayLoan(playerId, amount = null) {
     const playerIdx = this.getPlayerIndex(playerId);
     if (playerIdx === -1) throw new Error('Player not found');
+    this.saveStateSnapshot();
     const player = this.players[playerIdx];
     if (!player.loanAmount || player.loanAmount <= 0) {
       throw new Error('No active loan to repay');
@@ -342,7 +347,6 @@ export class PokerEngine {
     this.handNumber += 1;
     this.isHandActive = true;
     this.currentStreet = STREETS.PRE_FLOP;
-    this.history = []; // reset undo for fresh hand
 
     // Reset player round/hand state
     for (const p of this.players) {
@@ -818,7 +822,7 @@ export class PokerEngine {
       actionLog: [...this.actionLog],
     };
     this.history.push(snapshot);
-    if (this.history.length > 20) this.history.shift(); // keep last 20 snapshots
+    if (this.history.length > 60) this.history.shift(); // keep last 60 snapshots
   }
 
   undo() {

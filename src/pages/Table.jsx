@@ -9,12 +9,12 @@ import ShowdownModal from '../components/ShowdownModal';
 import HostMenuModal from '../components/HostMenuModal';
 import ActivityLogModal from '../components/ActivityLogModal';
 import ThemeSelectorModal from '../components/ThemeSelectorModal';
-import { History, Settings, Play, Palette, Volume2, VolumeX, CheckCircle, Copy, Check } from 'lucide-react';
+import { History, Settings, Play, Palette, Volume2, VolumeX, CheckCircle, Copy, Check, RotateCcw } from 'lucide-react';
 
 export default function Table() {
   const { id: routeRoomId } = useParams();
   const navigate = useNavigate();
-  const { gameState, user, connected, startHand, joinRoom, soundEnabled, toggleSound, reconnectAlert, currentTheme } = useGame();
+  const { gameState, user, connected, startHand, joinRoom, undoAction, soundEnabled, toggleSound, reconnectAlert, currentTheme } = useGame();
 
   const [copiedCode, setCopiedCode] = useState(false);
   const [showHostMenu, setShowHostMenu] = useState(false);
@@ -191,6 +191,22 @@ export default function Table() {
             >
               <History className={`w-3.5 h-3.5 ${currentTheme.accentText}`} />
               <span className="hidden xs:inline">Log</span>
+            </button>
+          )}
+
+          {/* Undo Button for Host */}
+          {isHost && !isLobby && gameState?.canUndo && (
+            <button
+              onClick={() => {
+                if (window.confirm('Undo the last action / pot award?')) {
+                  undoAction();
+                }
+              }}
+              className="flex items-center gap-1 bg-amber-600/90 hover:bg-amber-500 text-white px-2 py-1 rounded-lg text-xs font-bold transition-all shadow cursor-pointer active:scale-95"
+              title="Undo last action or pot award"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span className="hidden xs:inline">Undo</span>
             </button>
           )}
 

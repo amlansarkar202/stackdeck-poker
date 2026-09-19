@@ -195,6 +195,50 @@ assert(room.engine.players[1].isConnected === false, 'Guest marked disconnected'
 // Reconnection with same ID
 const reconnectResult = gm.joinRoom(roomId, { id: 'guest1', name: 'Guest' }, 'sock2');
 assert(reconnectResult.activePlayer.isConnected === true, 'Guest seat reconnected seamlessly');
-console.log('✅ PASSED: Room creation, seamless reconnection, and disconnect handling');
+// ==========================================
+// TEST 7: MULTI-ROUND UNDO ACROSS HANDS, SHOWDOWNS & POT AWARDS
+// ==========================================
+console.log('\n--- Test 7: Multi-Round & Multi-Step Undo System ---');
+const undoEngine = new PokerEngine({ smallBlind: 10, bigBlind: 20, startingStack: 1000 });
+undoEngine.addPlayer({ id: 'u1', name: 'User 1', stack: 1000 });
+undoEngine.addPlayer({ id: 'u2', name: 'User 2', stack: 1000 });
 
-console.log('\n🎉 ALL 6 COMPREHENSIVE SUITE TESTS PASSED WITH ZERO ERRORS!\n');
+// Hand 1 starts
+undoEngine.startHand();
+undoEngine.raise('u1', 100);
+undoEngine.call('u2'); // Flop ($200 pot)
+undoEngine.raise('u2', 200);
+undoEngine.call('u1'); // Turn ($600 pot)
+undoEngine.check('u2');
+undoEngine.check('u1'); // River
+undoEngine.check('u2');
+undoEngine.check('u1'); // Showdown
+
+// Award pot to User 2 ($600 pot won)
+undoEngine.awardPots([{ potIndex: 0, winnerIds: ['u2'] }]);
+assert(undoEngine.players[1].stack === 1300, 'User 2 stack is $1300 after pot award');
+assert(undoEngine.players[0].stack === 700, 'User 1 stack is $700');
+
+// Host mistakenly starts Hand 2
+undoEngine.startHand();
+assert(undoEngine.handNumber === 2, 'Hand 2 started');
+
+// 1st Undo: Reverts Hand 2 start back to end of Hand 1
+assert(undoEngine.undo() === true, '1st Undo successfully reverted Hand 2 start');
+assert(undoEngine.handNumber === 1, 'Reverted back to Hand 1');
+assert(undoEngine.currentStreet === 'HAND_OVER', 'Reverted back to Hand 1 conclusion');
+
+// 2nd Undo: Reverts the mistaken pot distribution back to SHOWDOWN before chips were awarded
+assert(undoEngine.undo() === true, '2nd Undo successfully reverted pot distribution');
+assert(undoEngine.currentStreet === 'SHOWDOWN', 'Reverted back to SHOWDOWN state');
+assert(undoEngine.players[1].stack === 1000 - 300, 'User 2 stack reverted before pot was awarded ($700)');
+assert(undoEngine.players[0].stack === 1000 - 300, 'User 1 stack reverted before pot was awarded ($700)');
+
+// Host awards pot to User 1 instead!
+undoEngine.awardPots([{ potIndex: 0, winnerIds: ['u1'] }]);
+assert(undoEngine.players[0].stack === 1300, 'User 1 correctly awarded the $600 pot');
+assert(undoEngine.players[1].stack === 700, 'User 2 stack is $700');
+
+console.log('✅ PASSED: Full multi-round undo across hands, showdowns, and pot distributions');
+
+console.log('\n🎉 ALL 7 COMPREHENSIVE SUITE TESTS PASSED WITH ZERO ERRORS!\n');

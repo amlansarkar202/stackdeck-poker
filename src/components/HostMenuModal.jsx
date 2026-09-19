@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Settings, PlusCircle, Edit3, UserX, Clock, Play, Pause, X, CreditCard, Coffee } from 'lucide-react';
+import { Settings, PlusCircle, Edit3, UserX, Clock, Play, Pause, X, CreditCard, Coffee, RotateCcw } from 'lucide-react';
 import { useGame } from '../context/GameContext';
 
 export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }) {
-  const { gameState, rebuy, editStack, kickPlayer, toggleSitOut, toggleBlindTimer, takeLoan, repayLoan, currentTheme } = useGame();
-  const { players = [], isTimerRunning, blindTimerMinutes, startingStack = 1000 } = gameState || {};
+  const { gameState, rebuy, editStack, kickPlayer, toggleSitOut, toggleBlindTimer, takeLoan, repayLoan, undoAction, currentTheme } = useGame();
+  const { players = [], isTimerRunning, blindTimerMinutes, startingStack = 1000, canUndo = false } = gameState || {};
 
   const [activeTab, setActiveTab] = useState('players');
   const [targetPlayerId, setTargetPlayerId] = useState(selectedPlayer?.id || players[0]?.id);
@@ -14,6 +14,12 @@ export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }
   if (!isOpen) return null;
 
   const targetPlayer = players.find(p => p.id === targetPlayerId) || players[0];
+
+  const handleUndo = () => {
+    if (window.confirm('Undo the last action / pot award?')) {
+      undoAction();
+    }
+  };
 
   const handleRebuy = () => {
     if (!targetPlayerId || rebuyAmount <= 0) return;
@@ -265,11 +271,24 @@ export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }
           </div>
         )}
 
-        {/* Footer */}
-        <div className="pt-2 border-t border-white/10 mt-auto">
+        {/* Footer Actions */}
+        <div className="pt-2 border-t border-white/10 mt-auto flex gap-2">
+          <button
+            onClick={handleUndo}
+            disabled={!canUndo}
+            className={`flex items-center justify-center gap-1.5 flex-1 py-2.5 rounded-xl font-bold text-xs transition-all ${
+              canUndo
+                ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-md cursor-pointer'
+                : 'bg-white/5 text-slate-600 cursor-not-allowed opacity-40'
+            }`}
+            title="Undo the last bet, fold, stack edit, or pot award"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Undo Action</span>
+          </button>
           <button
             onClick={onClose}
-            className="w-full py-2 rounded-xl bg-white/10 hover:bg-white/15 text-slate-200 font-semibold transition-colors text-xs cursor-pointer"
+            className="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-slate-200 font-semibold transition-colors text-xs cursor-pointer"
           >
             Close
           </button>
