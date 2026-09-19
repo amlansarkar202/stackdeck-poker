@@ -22,6 +22,7 @@ export function GameProvider({ children }) {
 
   // Table Theme: Monaco Emerald (Permanent Default)
   const [tableTheme] = useState('emerald');
+  const setTableTheme = () => {};
   const currentTheme = THEMES.emerald;
 
   useEffect(() => {
