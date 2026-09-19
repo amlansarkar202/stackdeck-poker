@@ -132,31 +132,48 @@ console.log('✅ PASSED: Loan stack, sit-out penalty, and double repayment');
 
 
 // ==========================================
-// TEST 5: KICK PLAYER & SIT-OUT BREAK TOGGLE DURING ACTIVE HAND
+// TEST 5: KICK PLAYER & 1-ROUND NEXT-HAND SIT-OUT BREAK
 // ==========================================
-console.log('\n--- Test 5: Kick Player & Sit-Out Break Toggle During Active Hand ---');
+console.log('\n--- Test 5: Kick Player & 1-Round Next-Hand Sit-Out Lifecycle ---');
 const kickEngine = new PokerEngine({ smallBlind: 10, bigBlind: 20, startingStack: 1000 });
 kickEngine.addPlayer({ id: 'k1', name: 'Player 1', stack: 1000 });
 kickEngine.addPlayer({ id: 'k2', name: 'Player 2', stack: 1000 });
 kickEngine.addPlayer({ id: 'k3', name: 'Player 3', stack: 1000 });
 
+// Hand 1 starts: all 3 active
 kickEngine.startHand();
+assert(kickEngine.players[2].isSittingOut === false, 'Player 3 is active in Hand 1');
 
-// Sit out Player 3 mid-hand
-kickEngine.toggleSitOut('k3', true);
-assert(kickEngine.players[2].isSittingOut === true, 'Player 3 is marked sitting out');
-assert(kickEngine.players[2].isFolded === true, 'Player 3 folded upon sitting out');
+// Host schedules Player 3 for sit-out on next hand
+kickEngine.toggleSitOutNextHand('k3', true);
+assert(kickEngine.players[2].sitOutNextHand === true, 'Player 3 queued for next-hand sit-out');
+assert(kickEngine.players[2].isSittingOut === false, 'Player 3 is NOT folded mid-hand; still active in current hand');
 
-// Kick Player 2 while hand is active
+// Finish Hand 1
+kickEngine.fold('k1');
+kickEngine.fold('k2');
+assert(kickEngine.isHandActive === false, 'Hand 1 finished');
+
+// Hand 2 starts: Player 3 now sits out for this single round
+kickEngine.startHand();
+assert(kickEngine.players[2].isSittingOut === true, 'Player 3 is sitting out in Hand 2');
+assert(kickEngine.players[2].sitOutNextHand === false, 'Next-hand queue flag was consumed');
+assert(kickEngine.players[2].roundBet === 0, 'Player 3 did not post blinds in Hand 2');
+
+// Kick Player 2 while Hand 2 is active
 kickEngine.removePlayer('k2');
 assert(kickEngine.players.length === 2, 'Player 2 removed from table');
-assert(kickEngine.players.find(p => p.id === 'k2') === undefined, 'Player 2 no longer in roster');
 
-// Player 3 sits back in
-kickEngine.toggleSitOut('k3', false);
-assert(kickEngine.players[1].isSittingOut === false, 'Player 3 sat back into the game');
+// Finish Hand 2
+kickEngine.finishHand();
+assert(kickEngine.players.find(p => p.id === 'k3').isSittingOut === false, 'Player 3 sit-out automatically cleared after 1 round');
 
-console.log('✅ PASSED: Robust player removal and voluntary sit-out during active hand');
+// Hand 3 starts: Player 3 automatically active again
+kickEngine.addPlayer({ id: 'k4', name: 'Player 4', stack: 1000 });
+kickEngine.startHand();
+assert(kickEngine.players.find(p => p.id === 'k3').isSittingOut === false, 'Player 3 active in Hand 3 without needing manual intervention');
+
+console.log('✅ PASSED: Kick player and host 1-round next-hand sit-out lifecycle');
 
 
 // ==========================================

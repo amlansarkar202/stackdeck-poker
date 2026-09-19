@@ -71,6 +71,10 @@ export default function PlayerSeat({ player, isSelf = false, onClick = null }) {
           <span className="absolute -bottom-2 bg-amber-900/90 text-amber-200 text-[8px] font-black uppercase px-1.5 py-0.5 rounded shadow border border-amber-400/40">
             AWAY
           </span>
+        ) : player.sitOutNextHand ? (
+          <span className="absolute -bottom-2 bg-purple-950/90 text-purple-300 text-[7.5px] font-black uppercase px-1.5 py-0.5 rounded shadow border border-purple-500/40">
+            BREAK NEXT
+          </span>
         ) : player.isAllIn && !player.isFolded ? (
           <span className="absolute -bottom-2 bg-red-600 text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded shadow border border-red-300">
             ALL-IN

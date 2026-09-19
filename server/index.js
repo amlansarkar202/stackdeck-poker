@@ -342,13 +342,18 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Host / Player Action: Toggle Sit Out (Take break / Return to table)
-  socket.on('toggle_sit_out', ({ roomId, playerId, isSittingOut }, callback) => {
+  // Host Action: Toggle Sit Out for Next 1 Round (Break)
+  socket.on('toggle_sit_out', ({ roomId, playerId, sitOutNextHand }, callback) => {
     try {
       const room = gameManager.getRoom(roomId);
       if (!room) throw new Error('Room not found');
 
-      room.engine.toggleSitOut(playerId, isSittingOut);
+      const session = gameManager.socketToRoom.get(socket.id);
+      if (session && session.playerId !== room.hostId) {
+        throw new Error('Only the host can schedule player sit-outs');
+      }
+
+      room.engine.toggleSitOutNextHand(playerId, sitOutNextHand);
       gameManager.broadcastState(room.id);
       if (callback) callback({ success: true });
     } catch (err) {

@@ -321,9 +321,9 @@ export function GameProvider({ children }) {
     });
   };
 
-  const toggleSitOut = (playerId, isSittingOut = null) => {
+  const toggleSitOut = (playerId, sitOutNextHand = null) => {
     if (!socket || !gameState) return;
-    socket.emit('toggle_sit_out', { roomId: gameState.roomId, playerId, isSittingOut }, (res) => {
+    socket.emit('toggle_sit_out', { roomId: gameState.roomId, playerId, sitOutNextHand }, (res) => {
       if (!res.success) setError(res.error);
     });
   };

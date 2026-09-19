@@ -67,6 +67,7 @@ export class PokerEngine {
         isFolded: p.isFolded,
         isAllIn: p.isAllIn,
         isSittingOut: p.isSittingOut,
+        sitOutNextHand: p.sitOutNextHand || false,
         isConnected: p.isConnected,
         isDealer: idx === this.dealerIndex,
         isSB: idx === this.getSmallBlindIndex(),
@@ -97,6 +98,7 @@ export class PokerEngine {
       isFolded: false,
       isAllIn: false,
       isSittingOut: false,
+      sitOutNextHand: false,
       isConnected: true,
     };
     this.players.push(player);
@@ -204,42 +206,26 @@ export class PokerEngine {
     return true;
   }
 
-  toggleSitOut(playerId, targetState = null) {
+  toggleSitOutNextHand(playerId, targetState = null) {
     const playerIdx = this.getPlayerIndex(playerId);
     if (playerIdx === -1) throw new Error('Player not found');
     const player = this.players[playerIdx];
 
-    const newState = targetState !== null ? Boolean(targetState) : !player.isSittingOut;
-    player.isSittingOut = newState;
-    if (!newState) {
-      player.loanRoundsRemaining = 0;
-    }
+    const newState = targetState !== null ? Boolean(targetState) : !player.sitOutNextHand;
+    player.sitOutNextHand = newState;
 
     if (newState) {
-      this.logAction(`⏸️ ${player.name} is sitting out (taking a break)`);
-      if (this.isHandActive && !player.isFolded) {
-        player.isFolded = true;
-        const remainingUnfolded = this.players.filter(p => !p.isFolded);
-        
-        if (remainingUnfolded.length <= 1) {
-          if (remainingUnfolded.length === 1) {
-            const winner = remainingUnfolded[0];
-            const totalPot = this.getTotalPot();
-            winner.stack += totalPot;
-            this.logAction(`🏆 ${winner.name} wins $${totalPot} (everyone else folded/sitting out)`);
-          }
-          this.currentStreet = STREETS.HAND_OVER;
-          this.isHandActive = false;
-          this.currentTurnIndex = null;
-        } else if (this.currentTurnIndex === playerIdx) {
-          this.advanceTurn();
-        }
-      }
+      this.logAction(`⏸️ Host scheduled ${player.name} to sit out the next round (break)`);
     } else {
-      this.logAction(`▶️ ${player.name} is back in the game!`);
+      this.logAction(`▶️ Host cancelled next round sit-out for ${player.name}`);
     }
 
-    return { success: true, isSittingOut: player.isSittingOut, player };
+    return { success: true, sitOutNextHand: player.sitOutNextHand, player };
+  }
+
+  // Backward-compatible alias
+  toggleSitOut(playerId, targetState = null) {
+    return this.toggleSitOutNextHand(playerId, targetState);
   }
 
   takeLoan(playerId, customAmount = null) {
@@ -338,6 +324,15 @@ export class PokerEngine {
 
   // --- HAND LIFECYCLE ---
   startHand() {
+    // 1. Activate scheduled 1-round sit-outs for next hand
+    for (const p of this.players) {
+      if (p.sitOutNextHand) {
+        p.isSittingOut = true;
+        p.sitOutNextHand = false; // Consumed for this 1 round
+        this.logAction(`⏸️ ${p.name} is sitting out for this round (1-round break)`);
+      }
+    }
+
     const eligible = this.getEligiblePlayersForHand();
     if (eligible.length < 2) {
       throw new Error('At least 2 players with chips are required to start a hand');
@@ -348,11 +343,6 @@ export class PokerEngine {
     this.isHandActive = true;
     this.currentStreet = STREETS.PRE_FLOP;
     this.history = []; // reset undo for fresh hand
-    
-    // Advance dealer button if not first hand
-    if (this.handNumber > 1) {
-      this.dealerIndex = this.getNextActiveIndex(this.dealerIndex);
-    }
 
     // Reset player round/hand state
     for (const p of this.players) {
@@ -360,6 +350,19 @@ export class PokerEngine {
       p.totalHandBet = 0;
       p.isFolded = p.isSittingOut || p.stack <= 0;
       p.isAllIn = false;
+    }
+
+    // Advance dealer button if not first hand
+    if (this.handNumber > 1) {
+      const startIdx = this.dealerIndex !== null && this.dealerIndex >= 0 ? this.dealerIndex : 0;
+      const nextDealer = this.getNextActiveIndex(startIdx);
+      this.dealerIndex = nextDealer !== null ? nextDealer : startIdx;
+    } else {
+      // Ensure initial dealer is an active player
+      if (this.dealerIndex === null || this.players[this.dealerIndex]?.isFolded) {
+        const firstActive = this.players.findIndex(p => !p.isFolded);
+        this.dealerIndex = firstActive !== -1 ? firstActive : 0;
+      }
     }
 
     this.actionLog = [];
@@ -770,15 +773,18 @@ export class PokerEngine {
     this.isHandActive = false;
     this.currentTurnIndex = null;
 
-    // 1. Process sit-out loan countdown for any players who took a loan
+    // 1. Process 1-round sit-out completion (loans & voluntary breaks)
     for (const p of this.players) {
       if (p.loanRoundsRemaining > 0) {
         p.loanRoundsRemaining -= 1;
         if (p.loanRoundsRemaining <= 0) {
           p.isSittingOut = false;
           p.loanRoundsRemaining = 0;
-          this.logAction(`✅ ${p.name}'s sit-out complete. Returning to table next hand!`);
+          this.logAction(`✅ ${p.name}'s loan sit-out complete. Returning to table next hand!`);
         }
+      } else if (p.isSittingOut) {
+        p.isSittingOut = false;
+        this.logAction(`✅ ${p.name}'s 1-round break complete. Returning to table next hand!`);
       }
     }
 

@@ -84,30 +84,20 @@ export default function ActionControls() {
     setIsRaiseOpen(false);
   };
 
-  // Sitting Out (Manual Break or Loan Active)
+  // Sitting Out (1-Round Break or Loan Active)
   if (myPlayer?.isSittingOut) {
     const isLoanSitOut = myPlayer?.loanRoundsRemaining > 0;
     return (
       <div className="w-full bg-[#0d1117]/95 backdrop-blur-md border-t border-white/10 p-3.5 text-center flex flex-col items-center gap-1.5 animate-fade-in">
         <div className="flex items-center gap-1.5 text-amber-300 font-bold text-xs sm:text-sm">
           <Pause className="w-4 h-4" />
-          <span>{isLoanSitOut ? 'Sitting Out (Loan Stack Active)' : 'Sitting Out (On Break)'}</span>
+          <span>{isLoanSitOut ? 'Sitting Out (Loan Stack Active)' : 'Sitting Out (1-Round Break)'}</span>
         </div>
         <span className="text-[11px] text-slate-400">
           {isLoanSitOut
             ? `You will automatically rejoin the table next hand with your $${myPlayer.stack.toLocaleString()} stack.`
-            : 'You are currently sitting out. Tap below to return to active play.'}
+            : 'You are sitting out for this hand. You will automatically rejoin in the next hand.'}
         </span>
-        {!isLoanSitOut && (
-          <button
-            type="button"
-            onClick={() => toggleSitOut(myPlayer.id, false)}
-            className="mt-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-1.5 rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-1.5 active:scale-98"
-          >
-            <Play className="w-3.5 h-3.5" />
-            <span>I am Back (Sit In)</span>
-          </button>
-        )}
       </div>
     );
   }

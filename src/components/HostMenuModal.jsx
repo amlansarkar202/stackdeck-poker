@@ -181,33 +181,33 @@ export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }
                       <span className="font-semibold text-slate-200 truncate">{p.name} (${p.stack.toLocaleString()})</span>
                       {p.isSittingOut && (
                         <span className="text-[9px] font-bold text-amber-300 bg-amber-500/20 px-1 py-0.5 rounded border border-amber-500/30 shrink-0">
-                          Away
+                          Sitting Out (1 Round)
+                        </span>
+                      )}
+                      {p.sitOutNextHand && !p.isSittingOut && (
+                        <span className="text-[9px] font-bold text-amber-300 bg-amber-500/20 px-1 py-0.5 rounded border border-amber-500/30 shrink-0">
+                          Break Next Round
                         </span>
                       )}
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
-                      {/* Sit Out / Sit In Break Toggle */}
+                      {/* Sit Out Next 1 Round Toggle (Host Only) */}
                       <button
                         type="button"
-                        onClick={() => toggleSitOut(p.id, !p.isSittingOut)}
+                        onClick={() => toggleSitOut(p.id, !p.sitOutNextHand)}
                         className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold transition-all cursor-pointer ${
-                          p.isSittingOut
-                            ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm'
+                          p.sitOutNextHand
+                            ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-sm'
                             : 'bg-white/10 hover:bg-amber-600/80 text-slate-300 hover:text-white border border-white/10'
                         }`}
-                        title={p.isSittingOut ? `Return ${p.name} to active play` : `Sit out ${p.name} for break / next round`}
+                        title={
+                          p.sitOutNextHand
+                            ? `Cancel scheduled next round sit-out for ${p.name}`
+                            : `Schedule ${p.name} to sit out the next 1 round for a break`
+                        }
                       >
-                        {p.isSittingOut ? (
-                          <>
-                            <Play className="w-2.5 h-2.5" />
-                            <span>Sit In</span>
-                          </>
-                        ) : (
-                          <>
-                            <Coffee className="w-2.5 h-2.5 text-amber-400" />
-                            <span>Sit Out</span>
-                          </>
-                        )}
+                        <Coffee className="w-2.5 h-2.5" />
+                        <span>{p.sitOutNextHand ? 'Cancel Sit-Out' : 'Sit Out Next Round'}</span>
                       </button>
 
                       {/* Kick Player */}
