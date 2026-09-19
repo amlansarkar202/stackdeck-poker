@@ -57,13 +57,15 @@ export class GameManager {
   }
 
   getRoom(roomId) {
-    return this.rooms.get(roomId?.toUpperCase());
+    if (!roomId) return null;
+    return this.rooms.get(String(roomId).trim().toUpperCase());
   }
 
   joinRoom(roomId, playerData, socketId) {
-    const room = this.getRoom(roomId);
+    const cleanRoomId = String(roomId || '').trim().toUpperCase();
+    const room = this.getRoom(cleanRoomId);
     if (!room) {
-      throw new Error(`Room ${roomId} not found`);
+      throw new Error(`Room ${cleanRoomId || roomId} not found`);
     }
 
     const inputName = (playerData.name || '').trim();
