@@ -187,12 +187,12 @@ export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }
                       <span className="font-semibold text-slate-200 truncate">{p.name} (${p.stack.toLocaleString()})</span>
                       {p.isSittingOut && (
                         <span className="text-[9px] font-bold text-amber-300 bg-amber-500/20 px-1 py-0.5 rounded border border-amber-500/30 shrink-0">
-                          Sitting Out (1 Round)
+                          Away
                         </span>
                       )}
                       {p.sitOutNextHand && !p.isSittingOut && (
-                        <span className="text-[9px] font-bold text-amber-300 bg-amber-500/20 px-1 py-0.5 rounded border border-amber-500/30 shrink-0">
-                          Break Next Round
+                        <span className="text-[9px] font-bold text-purple-300 bg-purple-500/20 px-1 py-0.5 rounded border border-purple-500/30 shrink-0">
+                          Break Next
                         </span>
                       )}
                     </div>
@@ -208,12 +208,12 @@ export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }
                         }`}
                         title={
                           p.sitOutNextHand
-                            ? `Cancel scheduled next round sit-out for ${p.name}`
-                            : `Schedule ${p.name} to sit out the next 1 round for a break`
+                            ? `Cancel scheduled break for ${p.name}`
+                            : `Schedule ${p.name} to sit out next round`
                         }
                       >
                         <Coffee className="w-2.5 h-2.5" />
-                        <span>{p.sitOutNextHand ? 'Cancel Sit-Out' : 'Sit Out Next Round'}</span>
+                        <span>{p.sitOutNextHand ? 'Cancel' : 'Sit Out'}</span>
                       </button>
 
                       {/* Kick Player */}
