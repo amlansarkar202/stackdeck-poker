@@ -35,8 +35,11 @@ export default function Table() {
 
   // Auto-join & reconnect seamlessly if user refreshed or navigated directly
   useEffect(() => {
-    if (connected && routeRoomId && (!gameState || gameState.roomId !== routeRoomId.toUpperCase())) {
-      const cleanCode = routeRoomId.toUpperCase();
+    if (!routeRoomId) return;
+    const cleanCode = routeRoomId.toUpperCase();
+    sessionStorage.setItem('poker_active_room', cleanCode);
+
+    if (connected && (!gameState || gameState.roomId !== cleanCode)) {
       const savedPlayer = JSON.parse(
         localStorage.getItem(`poker_player_${cleanCode}`) ||
         sessionStorage.getItem(`poker_player_${cleanCode}`) ||
@@ -44,24 +47,37 @@ export default function Table() {
       );
 
       const joinName = savedPlayer?.name || user?.name;
-      const joinAvatar = savedPlayer?.avatar || user?.avatar;
 
       if (joinName) {
-        joinRoom(cleanCode, 1000, joinName, joinAvatar).catch(() => {
-          navigate(`/join?code=${cleanCode}`);
+        joinRoom(cleanCode, 1000, joinName).catch((err) => {
+          console.warn('[Table] Reconnection retry pending:', err);
         });
       } else {
         navigate(`/join?code=${cleanCode}`);
       }
     }
-  }, [connected, routeRoomId, gameState?.roomId]);
+  }, [connected, routeRoomId, gameState?.roomId, user?.name]);
 
   if (!gameState) {
     return (
-      <div className={`min-h-screen ${currentTheme.pageBg} flex flex-col items-center justify-center p-4`}>
+      <div className={`min-h-screen ${currentTheme.pageBg} flex flex-col items-center justify-center p-4 text-center`}>
         <div className="text-3xl mb-2 animate-bounce">♠️</div>
         <h2 className="text-lg font-bold text-white mb-1">Connecting to Table {routeRoomId}...</h2>
-        <p className="text-xs text-slate-400">Loading game state</p>
+        <p className="text-xs text-slate-400 mb-4">Syncing table state over network</p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-all cursor-pointer"
+          >
+            Retry Connection
+          </button>
+          <Link
+            to={`/join?code=${routeRoomId || ''}`}
+            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-all"
+          >
+            Join / Change Name
+          </Link>
+        </div>
       </div>
     );
   }
@@ -78,8 +94,16 @@ export default function Table() {
   return (
     <div className={`min-h-screen ${currentTheme.pageBg} flex flex-col justify-between overflow-x-hidden transition-colors duration-500`}>
       
+      {/* Network Offline / Reconnecting Banner */}
+      {!connected && (
+        <div className="bg-amber-950/95 border-b border-amber-500/40 text-amber-200 text-xs font-bold py-1.5 px-3 text-center flex items-center justify-center gap-2 shadow-lg animate-pulse z-50">
+          <div className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+          <span>Connection unstable / offline — Reconnecting to table in background...</span>
+        </div>
+      )}
+
       {/* Reconnection Alert Banner */}
-      {reconnectAlert && (
+      {reconnectAlert && connected && (
         <div className="bg-emerald-600 text-white text-xs font-bold py-1.5 px-3 text-center flex items-center justify-center gap-1.5 shadow-md animate-fade-in z-50">
           <CheckCircle className="w-3.5 h-3.5" />
           <span>{reconnectAlert}</span>

@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+import compression from 'compression';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
@@ -15,6 +16,7 @@ const app = express();
 const httpServer = createServer(app);
 
 app.use(cors());
+app.use(compression());
 app.use(express.json());
 
 const io = new Server(httpServer, {
@@ -22,6 +24,11 @@ const io = new Server(httpServer, {
     origin: '*',
     methods: ['GET', 'POST'],
   },
+  pingInterval: 10000, // 10s heartbeat
+  pingTimeout: 30000,  // 30s timeout tolerant to mobile data handoffs
+  connectTimeout: 45000,
+  transports: ['websocket', 'polling'],
+  allowUpgrades: true,
 });
 
 const gameManager = new GameManager(io);

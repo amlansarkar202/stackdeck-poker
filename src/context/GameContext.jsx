@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { sounds } from '../sound/audioEffects';
 import { THEMES } from '../utils/theme';
@@ -44,6 +44,19 @@ export function GameProvider({ children }) {
     return { id: savedId, name: savedName };
   });
 
+  const userRef = useRef(user);
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
+
+  const activeRoomRef = useRef(null);
+  useEffect(() => {
+    if (gameState?.roomId) {
+      activeRoomRef.current = gameState.roomId;
+      sessionStorage.setItem('poker_active_room', gameState.roomId);
+    }
+  }, [gameState?.roomId]);
+
   const updateUserProfile = (name) => {
     const updated = { ...user, name };
     setUser(updated);
@@ -70,22 +83,49 @@ export function GameProvider({ children }) {
       });
   }, []);
 
-  // Initialize Socket.io
+  // Initialize Resilient Socket.io Client
   useEffect(() => {
     const s = io(SOCKET_URL, {
       transports: ['websocket', 'polling'],
-      reconnectionAttempts: 10,
+      reconnection: true,
+      reconnectionAttempts: Infinity, // Never stop reconnecting on flaky mobile network
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      randomizationFactor: 0.5,
+      timeout: 20000,
+      autoConnect: true,
     });
 
     s.on('connect', () => {
       console.log('[Socket] Connected to server');
       setConnected(true);
       setError(null);
+
+      // Auto-resubscribe to active room on reconnect
+      const activeRoom = activeRoomRef.current || sessionStorage.getItem('poker_active_room');
+      const currentUser = userRef.current;
+      if (activeRoom && currentUser?.name) {
+        s.emit('join_room', {
+          roomId: activeRoom.toUpperCase(),
+          playerData: currentUser,
+        }, (res) => {
+          if (res && res.success) {
+            setGameState(res.state);
+            setReconnectAlert(`Reconnected to Table ${activeRoom}`);
+            setTimeout(() => setReconnectAlert(null), 3000);
+          }
+        });
+      }
     });
 
-    s.on('disconnect', () => {
-      console.log('[Socket] Disconnected from server');
+    s.on('disconnect', (reason) => {
+      console.log('[Socket] Disconnected from server:', reason);
       setConnected(false);
+    });
+
+    s.on('reconnect', () => {
+      console.log('[Socket] Reconnected to server');
+      setConnected(true);
     });
 
     s.on('game_state_update', (state) => {
@@ -95,15 +135,18 @@ export function GameProvider({ children }) {
       }
       
       // Check if it's currently this user's turn
-      const myPlayer = state.players?.find(p => p.id === user.id);
+      const currentUser = userRef.current;
+      const myPlayer = state.players?.find(p => p.id === currentUser.id || (currentUser.name && p.name && p.name.trim().toLowerCase() === currentUser.name.trim().toLowerCase()));
       if (myPlayer?.isTurn && state.isHandActive) {
         sounds.playTurnAlert();
       }
     });
 
     s.on('player_kicked', ({ playerId }) => {
-      if (playerId === user.id) {
+      const currentUser = userRef.current;
+      if (playerId === currentUser.id) {
         setGameState(null);
+        sessionStorage.removeItem('poker_active_room');
         setError('You were removed from the table by the host.');
         window.location.href = '/';
       }
@@ -114,7 +157,7 @@ export function GameProvider({ children }) {
     return () => {
       s.disconnect();
     };
-  }, [user.id]);
+  }, []);
 
   // --- ACTIONS ---
   const createRoom = (config, customHostData = null) => {
