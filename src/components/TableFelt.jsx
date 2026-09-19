@@ -58,23 +58,23 @@ export default function TableFelt({
     <div className="relative w-full max-w-6xl mx-auto flex flex-col items-center select-none py-1 sm:py-2 px-1 sm:px-2">
       
       {/* Felt Board Container (Expanded Vertical Spacing for Mobile Portrait) */}
-      <div className={`relative w-full aspect-[9/13] xs:aspect-[1/1] sm:aspect-[16/9] md:aspect-[18/9] min-h-[480px] xs:min-h-[500px] sm:min-h-[520px] max-h-[620px] rounded-[36px] sm:rounded-[52px] ${themeClass} flex items-center justify-center p-1 sm:p-6 transition-all duration-300`}>
+      <div className="relative w-full aspect-[9/13] xs:aspect-[1/1] sm:aspect-[16/9] md:aspect-[18/9] min-h-[480px] xs:min-h-[500px] sm:min-h-[520px] max-h-[620px] rounded-[36px] sm:rounded-[52px] poker-felt-emerald flex items-center justify-center p-1 sm:p-6 transition-all duration-300">
         
         {/* Table Center Info Deck (Compact to ensure zero overlap on portrait/mobile) */}
-        <div className="relative z-10 flex flex-col items-center text-center p-1.5 sm:p-3 rounded-2xl sm:rounded-3xl bg-black/85 backdrop-blur-xl border border-white/10 shadow-2xl max-w-[155px] xs:max-w-[175px] sm:max-w-[260px] w-full">
+        <div className="relative z-10 flex flex-col items-center text-center p-1.5 sm:p-3 rounded-2xl sm:rounded-3xl bg-[#030a05]/92 backdrop-blur-xl border border-emerald-500/25 shadow-2xl max-w-[155px] xs:max-w-[175px] sm:max-w-[260px] w-full">
           
           {/* Hand # & Street Phase Badge */}
           <div className="flex items-center gap-1.5 mb-0.5">
             <span className="text-[10px] sm:text-[11px] font-semibold text-slate-400">#{handNumber}</span>
-            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/5 text-amber-300 border border-amber-500/30">
+            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-500/30">
               {streetLabels[currentStreet] || currentStreet}
             </span>
           </div>
 
           {/* Main Pot & Side Pots Display */}
           <div className="my-0.5">
-            <div className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Pot</div>
-            <div className="text-2xl sm:text-4xl font-extrabold text-amber-300 tracking-tight filter drop-shadow">
+            <div className="text-[9px] sm:text-[10px] font-bold text-emerald-400/80 uppercase tracking-widest">Total Pot</div>
+            <div className="text-2xl sm:text-4xl font-black text-amber-300 tracking-tight filter drop-shadow">
               ${totalPot.toLocaleString()}
             </div>
 
@@ -84,7 +84,7 @@ export default function TableFelt({
                 {pots.map((pot, idx) => (
                   <span
                     key={idx}
-                    className="text-[9px] font-bold bg-white/5 text-slate-200 px-1.5 py-0.5 rounded border border-white/10"
+                    className="text-[9px] font-bold bg-emerald-950/60 text-slate-200 px-1.5 py-0.5 rounded border border-emerald-500/20"
                   >
                     {pot.name}: ${pot.amount.toLocaleString()}
                   </span>
@@ -93,8 +93,8 @@ export default function TableFelt({
             )}
           </div>
 
-          {/* 5-Card Community Board Indicators (Light Color Flip Design) */}
-          <div className="w-full my-1.5 pt-1.5 border-t border-white/10 flex flex-col items-center">
+          {/* 5-Card Community Board Indicators (Professional Light Casino Flip Design) */}
+          <div className="w-full my-1.5 pt-1.5 border-t border-emerald-500/20 flex flex-col items-center">
             <div className="flex items-center justify-center gap-1 sm:gap-2">
               {[1, 2, 3, 4, 5].map((cardIdx) => {
                 const isRevealed = cardIdx <= activeCardCount;
@@ -104,22 +104,22 @@ export default function TableFelt({
                     key={cardIdx}
                     className={`relative w-6 h-9 sm:w-10 sm:h-14 rounded-md sm:rounded-lg border transition-all duration-300 flex items-center justify-center shadow-sm overflow-hidden ${
                       isRevealed
-                        ? 'bg-gradient-to-b from-[#ffffff] via-[#f8f6f0] to-[#eae5d8] border-amber-400 shadow-md shadow-amber-400/25 scale-102 ring-1 ring-amber-300'
-                        : 'bg-black/40 border-dashed border-white/20 opacity-30'
+                        ? 'bg-gradient-to-b from-[#ffffff] via-[#fcfbf9] to-[#eeeae2] border-amber-400 shadow-md shadow-amber-400/20 scale-102 ring-1 ring-amber-400/60'
+                        : 'bg-black/50 border-dashed border-emerald-500/20 opacity-30'
                     }`}
                   >
                     {isRevealed ? (
-                      /* Elegant Light Card Graphic */
+                      /* Elegant Classic Casino Card Back / Face Graphic */
                       <div className="w-full h-full p-0.5 sm:p-1 flex flex-col items-center justify-center">
-                        <div className="w-full h-full border border-amber-500/40 rounded sm:rounded-md flex items-center justify-center bg-gradient-to-br from-amber-50/80 to-amber-100/60 relative">
-                          <div className="w-2.5 h-2.5 sm:w-4.5 sm:h-4.5 rotate-45 border-2 border-amber-500/70 flex items-center justify-center bg-amber-200/50 shadow-xs">
+                        <div className="w-full h-full border border-amber-600/40 rounded sm:rounded-md flex items-center justify-center bg-gradient-to-br from-amber-50 to-amber-100/70 relative">
+                          <div className="w-2.5 h-2.5 sm:w-4 sm:h-4 rotate-45 border border-amber-600/60 flex items-center justify-center bg-amber-200/60 shadow-xs">
                             <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-amber-600 rounded-full" />
                           </div>
                         </div>
                       </div>
                     ) : (
                       /* Empty Slot */
-                      <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-400/20" />
                     )}
                   </div>
                 );
@@ -127,7 +127,7 @@ export default function TableFelt({
             </div>
 
             {/* Street Labels */}
-            <div className="flex items-center justify-between w-full max-w-[150px] sm:max-w-[220px] mt-1 text-[8px] sm:text-[9px] text-slate-400 font-semibold px-1">
+            <div className="flex items-center justify-between w-full max-w-[150px] sm:max-w-[220px] mt-1 text-[8px] sm:text-[9px] text-emerald-300/70 font-semibold px-1">
               <span className={activeCardCount >= 3 ? 'text-amber-300 font-bold' : 'opacity-40'}>Flop (3)</span>
               <span className={activeCardCount >= 4 ? 'text-amber-300 font-bold' : 'opacity-40'}>Turn (1)</span>
               <span className={activeCardCount >= 5 ? 'text-amber-300 font-bold' : 'opacity-40'}>River (1)</span>
@@ -136,7 +136,7 @@ export default function TableFelt({
 
           {/* Clean Action Turn Indicator */}
           {isHandActive && currentStreet !== 'SHOWDOWN' && currentStreet !== 'HAND_OVER' && activePlayer && (
-            <div className="my-1 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-slate-200 text-[10px] sm:text-xs font-semibold">
+            <div className="my-1 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-slate-200 text-[10px] sm:text-xs font-semibold">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
               <span>
                 {activePlayer.id === currentUserId ? 'Action on you' : `Action: ${activePlayer.name}`}
@@ -159,7 +159,7 @@ export default function TableFelt({
           {(!isHandActive || currentStreet === 'HAND_OVER') && isHost && (
             <button
               onClick={onStartHand}
-              className="mt-2 flex items-center gap-1 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-gray-950 font-bold text-xs px-4 py-1.5 sm:px-5 sm:py-2 rounded-xl shadow-lg active:scale-98 transition-all cursor-pointer"
+              className="mt-2 flex items-center gap-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-bold text-xs px-4 py-1.5 sm:px-5 sm:py-2 rounded-xl shadow-lg active:scale-98 transition-all cursor-pointer border border-emerald-400/30"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
               <span>{handNumber === 0 ? 'Deal Hand' : 'Next Hand'}</span>
@@ -170,7 +170,7 @@ export default function TableFelt({
           {currentStreet === 'SHOWDOWN' && isHandActive && isHost && (
             <button
               onClick={onShowdownClick}
-              className="mt-2 flex items-center gap-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-gray-950 font-bold text-xs px-4 py-1.5 sm:px-5 sm:py-2 rounded-xl shadow-lg active:scale-98 transition-all cursor-pointer"
+              className="mt-2 flex items-center gap-1 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-gray-950 font-bold text-xs px-4 py-1.5 sm:px-5 sm:py-2 rounded-xl shadow-lg active:scale-98 transition-all cursor-pointer"
             >
               <Trophy className="w-3.5 h-3.5" />
               <span>Award Pot</span>

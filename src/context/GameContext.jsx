@@ -20,22 +20,13 @@ export function GameProvider({ children }) {
   const [error, setError] = useState(null);
   const [reconnectAlert, setReconnectAlert] = useState(null);
 
-  // Table Theme: 'cyberpunk' (default) | 'emerald' | 'sapphire'
-  const [tableTheme, setTableThemeState] = useState(() => {
-    return localStorage.getItem('poker_table_theme') || 'cyberpunk';
-  });
-
-  const setTableTheme = (themeName) => {
-    setTableThemeState(themeName);
-    localStorage.setItem('poker_table_theme', themeName);
-    document.documentElement.setAttribute('data-theme', themeName);
-  };
+  // Table Theme: Monaco Emerald (Permanent Default)
+  const [tableTheme] = useState('emerald');
+  const currentTheme = THEMES.emerald;
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', tableTheme);
-  }, [tableTheme]);
-
-  const currentTheme = THEMES[tableTheme] || THEMES.cyberpunk;
+    document.documentElement.setAttribute('data-theme', 'emerald');
+  }, []);
 
   // Local User Identity per Browser Tab (Enables multiple tabs to be separate players)
   const [user, setUser] = useState(() => {
