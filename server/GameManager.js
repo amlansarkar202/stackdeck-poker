@@ -88,9 +88,9 @@ export class GameManager {
       activePlayer = existingPlayer;
       room.engine.logAction(`🔄 ${existingPlayer.name} reconnected to table`);
     } else {
-      // If game has already started and locked, prevent new random entries
-      if (room.isLocked || room.status === 'ACTIVE') {
-        throw new Error('This game has already started and is locked to new players. Only existing players can reconnect.');
+      // If room is locked by host, prevent new entries
+      if (room.isLocked) {
+        throw new Error('This room is locked by the host.');
       }
 
       // New Player Entry: Ensure avatar is unique if possible
