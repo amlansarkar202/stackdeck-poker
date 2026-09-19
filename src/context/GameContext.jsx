@@ -15,7 +15,7 @@ export function GameProvider({ children }) {
   const [socket, setSocket] = useState(null);
   const [connected, setConnected] = useState(false);
   const [gameState, setGameState] = useState(null);
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(false);
   const [networkInfo, setNetworkInfo] = useState(null);
   const [error, setError] = useState(null);
   const [reconnectAlert, setReconnectAlert] = useState(null);

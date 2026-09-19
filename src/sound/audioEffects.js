@@ -6,7 +6,7 @@
 class SoundSynthesizer {
   constructor() {
     this.ctx = null;
-    this.enabled = true;
+    this.enabled = false;
   }
 
   initContext() {
