@@ -120,15 +120,20 @@ export class GameManager {
     const room = this.getRoom(roomId);
     if (!room) throw new Error('Room not found');
     const botAvatars = ['tiger', 'dragon', 'phoenix', 'eagle', 'wolf', 'lion', 'shark', 'reaper', 'crown', 'ace'];
-    const botNames = ['Apex Bengal', 'Draco', 'Solar Phoenix', 'War Eagle', 'Shadow Wolf', 'Golden Leo', 'Megalodon', 'Reaper', 'High Roller', 'Ace'];
-    const idx = room.engine.players.length;
-    const name = botNames[(idx - 1) % botNames.length] || `Beast ${idx + 1}`;
+    const idx = room.engine.players.length + 1;
     const avatar = botAvatars[(idx - 1) % botAvatars.length] || 'tiger';
+    
+    let playerNum = idx;
+    while (room.engine.players.some(p => p.name === `Player ${playerNum}`)) {
+      playerNum++;
+    }
+    const name = `Player ${playerNum}`;
     
     return room.engine.addPlayer({
       id: `bot_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
       name,
       avatar,
+      isBot: true,
       stack: room.engine.startingStack,
     });
   }

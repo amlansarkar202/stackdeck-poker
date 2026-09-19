@@ -15,11 +15,19 @@ export default function ActionControls() {
   } = gameState || {};
 
   const myPlayer = players.find(p => p.id === user.id || (user.name && p.name && p.name.trim().toLowerCase() === user.name.trim().toLowerCase()));
-  const isMyTurn = myPlayer && myPlayer.isTurn && isHandActive && !myPlayer.isFolded && !myPlayer.isAllIn && !myPlayer.isSittingOut;
+  const activeTurnPlayer = currentTurnIndex !== null && currentTurnIndex >= 0 ? players[currentTurnIndex] : null;
+  const isHost = gameState?.hostId === user.id;
 
-  // Calculate needed call amount & stack math
-  const playerRoundBet = myPlayer ? myPlayer.roundBet : 0;
-  const playerStack = myPlayer ? myPlayer.stack : 0;
+  // Check if it's my turn OR if it's a test player's turn and I am the host
+  const isDirectMyTurn = Boolean(myPlayer && myPlayer.isTurn && isHandActive && !myPlayer.isFolded && !myPlayer.isAllIn && !myPlayer.isSittingOut);
+  const isBotTurn = Boolean(!isDirectMyTurn && isHost && activeTurnPlayer && (activeTurnPlayer.isBot || activeTurnPlayer.id?.startsWith('bot_')) && isHandActive && !activeTurnPlayer.isFolded && !activeTurnPlayer.isAllIn && !activeTurnPlayer.isSittingOut);
+
+  const isMyTurn = isDirectMyTurn || isBotTurn;
+  const actingPlayer = isBotTurn ? activeTurnPlayer : myPlayer;
+
+  // Calculate needed call amount & stack math for acting player
+  const playerRoundBet = actingPlayer ? actingPlayer.roundBet : 0;
+  const playerStack = actingPlayer ? actingPlayer.stack : 0;
   const callNeeded = Math.max(0, currentBet - playerRoundBet);
   const canCheck = callNeeded === 0;
   const actualCallAmount = Math.min(playerStack, callNeeded);
@@ -35,7 +43,7 @@ export default function ActionControls() {
   const [typedInput, setTypedInput] = useState(String(minTargetBet));
   const inputRef = useRef(null);
 
-  // Reset when turn switches to user
+  // Reset when turn switches
   useEffect(() => {
     if (isMyTurn) {
       const initial = Math.min(minTargetBet, maxTargetBet);
@@ -43,7 +51,7 @@ export default function ActionControls() {
       setTypedInput(String(initial));
       setIsRaiseOpen(false);
     }
-  }, [isMyTurn, minTargetBet, maxTargetBet]);
+  }, [isMyTurn, actingPlayer?.id, minTargetBet, maxTargetBet]);
 
   // Focus input when raise drawer is opened
   useEffect(() => {
@@ -75,35 +83,17 @@ export default function ActionControls() {
 
   const handleConfirmRaise = () => {
     const finalAmount = Math.max(minTargetBet, Math.min(Number(typedInput) || raiseAmount, maxTargetBet));
-    sendAction('raise', finalAmount);
+    sendAction('raise', finalAmount, actingPlayer?.id);
     setIsRaiseOpen(false);
   };
 
   const handleDirectAllIn = () => {
-    sendAction('raise', maxTargetBet);
+    sendAction('raise', maxTargetBet, actingPlayer?.id);
     setIsRaiseOpen(false);
   };
 
-  // Sitting Out (1-Round Break or Loan Active)
-  if (myPlayer?.isSittingOut) {
-    const isLoanSitOut = myPlayer?.loanRoundsRemaining > 0;
-    return (
-      <div className="w-full bg-[#0d1117]/95 backdrop-blur-md border-t border-white/10 p-3.5 text-center flex flex-col items-center gap-1.5 animate-fade-in">
-        <div className="flex items-center gap-1.5 text-amber-300 font-bold text-xs sm:text-sm">
-          <Pause className="w-4 h-4" />
-          <span>{isLoanSitOut ? 'Sitting Out (Loan Stack Active)' : 'Sitting Out (1-Round Break)'}</span>
-        </div>
-        <span className="text-[11px] text-slate-400">
-          {isLoanSitOut
-            ? `You will automatically rejoin the table next hand with your $${myPlayer.stack.toLocaleString()} stack.`
-            : 'You are sitting out for this hand. You will automatically rejoin in the next hand.'}
-        </span>
-      </div>
-    );
-  }
-
   // Zero Balance Loan Option
-  if (myPlayer && myPlayer.stack === 0 && (!isHandActive || myPlayer.isFolded)) {
+  if (myPlayer && myPlayer.stack === 0 && (!isHandActive || myPlayer.isFolded) && !isBotTurn) {
     return (
       <div className="w-full bg-[#0e131e]/95 backdrop-blur-md border-t border-white/15 p-3.5 sm:p-4 text-center flex flex-col items-center gap-1.5 animate-fade-in">
         <div className="flex items-center gap-1.5 text-amber-400 font-bold text-xs sm:text-sm">
@@ -124,7 +114,7 @@ export default function ActionControls() {
     );
   }
 
-  // Spectating / Waiting States
+  // Spectating / Waiting States when not acting
   if (!isHandActive) {
     return (
       <div className="w-full bg-[#0d1117]/95 backdrop-blur-md border-t border-white/10 p-3 text-center">
@@ -135,27 +125,44 @@ export default function ActionControls() {
     );
   }
 
-  if (!myPlayer || myPlayer.isFolded) {
-    return (
-      <div className="w-full bg-[#0d1117]/95 backdrop-blur-md border-t border-white/10 p-3 text-center">
-        <span className="text-xs font-semibold text-slate-400">
-          {myPlayer?.isFolded ? 'Folded • Spectating table' : 'Spectating table'}
-        </span>
-      </div>
-    );
-  }
-
-  if (myPlayer.isAllIn) {
-    return (
-      <div className="w-full bg-[#0d1117]/95 backdrop-blur-md border-t border-white/10 p-3 text-center">
-        <span className="text-xs font-bold text-amber-400 tracking-wide">
-          ALL-IN (${myPlayer.roundBet}) • Waiting for showdown
-        </span>
-      </div>
-    );
-  }
-
   if (!isMyTurn) {
+    if (myPlayer?.isSittingOut) {
+      const isLoanSitOut = myPlayer?.loanRoundsRemaining > 0;
+      return (
+        <div className="w-full bg-[#0d1117]/95 backdrop-blur-md border-t border-white/10 p-3.5 text-center flex flex-col items-center gap-1.5 animate-fade-in">
+          <div className="flex items-center gap-1.5 text-amber-300 font-bold text-xs sm:text-sm">
+            <Pause className="w-4 h-4" />
+            <span>{isLoanSitOut ? 'Sitting Out (Loan Stack Active)' : 'Sitting Out (1-Round Break)'}</span>
+          </div>
+          <span className="text-[11px] text-slate-400">
+            {isLoanSitOut
+              ? `You will automatically rejoin the table next hand with your $${myPlayer.stack.toLocaleString()} stack.`
+              : 'You are sitting out for this hand. You will automatically rejoin in the next hand.'}
+          </span>
+        </div>
+      );
+    }
+
+    if (myPlayer?.isFolded) {
+      return (
+        <div className="w-full bg-[#0d1117]/95 backdrop-blur-md border-t border-white/10 p-3 text-center">
+          <span className="text-xs font-semibold text-slate-400">
+            Folded • Spectating table
+          </span>
+        </div>
+      );
+    }
+
+    if (myPlayer?.isAllIn) {
+      return (
+        <div className="w-full bg-[#0d1117]/95 backdrop-blur-md border-t border-white/10 p-3 text-center">
+          <span className="text-xs font-bold text-amber-400 tracking-wide">
+            ALL-IN (${myPlayer.roundBet}) • Waiting for showdown
+          </span>
+        </div>
+      );
+    }
+
     const activePlayer = players[currentTurnIndex];
     return (
       <div className="w-full bg-[#0d1117]/95 backdrop-blur-md border-t border-white/10 p-3 text-center flex items-center justify-center gap-2">
@@ -269,13 +276,26 @@ export default function ActionControls() {
           </div>
         )}
 
+        {/* Host Control Mode for Test Bots Banner */}
+        {isBotTurn && (
+          <div className="bg-purple-950/90 border border-purple-500/50 rounded-xl px-3 py-1.5 flex items-center justify-between text-xs text-purple-200 shadow-md">
+            <span className="font-bold flex items-center gap-1.5">
+              <span className="text-purple-400">🤖 Host Controlling:</span>
+              <strong className="text-white underline">{actingPlayer?.name}</strong>
+            </span>
+            <span className="text-[11px] font-mono text-purple-300 font-bold">
+              Stack: ${playerStack.toLocaleString()}
+            </span>
+          </div>
+        )}
+
         {/* PRIMARY ACTION BUTTONS: 2 ABOVE (Fold | Call/Check), 2 BELOW (Raise | All-In) */}
         <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
           
           {/* Row 1, Left: FOLD (Matte Clean Red) */}
           <button
             type="button"
-            onClick={() => sendAction('fold')}
+            onClick={() => sendAction('fold', 0, actingPlayer?.id)}
             className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-[#d32f2f] hover:bg-[#c62828] text-white font-bold text-sm sm:text-base shadow border border-red-900/30 active:scale-98 transition-all cursor-pointer"
           >
             <XCircle className="w-4 h-4 text-white/90" />
@@ -286,7 +306,7 @@ export default function ActionControls() {
           {canCheck ? (
             <button
               type="button"
-              onClick={() => sendAction('check')}
+              onClick={() => sendAction('check', 0, actingPlayer?.id)}
               className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold text-sm sm:text-base shadow border border-green-900/30 active:scale-98 transition-all cursor-pointer"
             >
               <CheckCircle2 className="w-4 h-4 text-white/90" />
@@ -295,7 +315,7 @@ export default function ActionControls() {
           ) : (
             <button
               type="button"
-              onClick={() => sendAction('call')}
+              onClick={() => sendAction('call', actualCallAmount, actingPlayer?.id)}
               className="flex items-center justify-center gap-1.5 py-3 sm:py-3.5 px-3 rounded-xl bg-[#2e7d32] hover:bg-[#1b5e20] text-white font-bold text-sm sm:text-base shadow border border-green-900/30 active:scale-98 transition-all cursor-pointer"
             >
               <CheckCircle2 className="w-4 h-4 text-white/90" />
