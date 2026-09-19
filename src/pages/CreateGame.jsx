@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { useGame } from '../context/GameContext';
-import { AVATAR_CRESTS } from '../components/AvatarIcon';
 import { Play } from 'lucide-react';
 
 export default function CreateGame() {
@@ -10,7 +9,6 @@ export default function CreateGame() {
   const navigate = useNavigate();
 
   const [name, setName] = useState(user.name || '');
-  const [avatar, setAvatar] = useState(user.avatar || 'tiger');
   const [smallBlind, setSmallBlind] = useState(10);
   const [bigBlind, setBigBlind] = useState(20);
   const [startingStack, setStartingStack] = useState(1000);
@@ -30,7 +28,7 @@ export default function CreateGame() {
     setLoading(true);
     setErrorMsg('');
 
-    updateUserProfile(cleanName, avatar);
+    updateUserProfile(cleanName);
 
     try {
       const roomId = await createRoom({
@@ -40,7 +38,7 @@ export default function CreateGame() {
         ante: Number(ante),
         blindTimerMinutes: Number(blindTimer),
         roomName: `${cleanName}'s Game`,
-      }, { name: cleanName, avatar });
+      }, { name: cleanName });
 
       navigate(`/room/${roomId}`);
     } catch (err) {
@@ -48,8 +46,6 @@ export default function CreateGame() {
       setLoading(false);
     }
   };
-
-  const selectedCrest = AVATAR_CRESTS.find(c => c.id === avatar) || AVATAR_CRESTS[0];
 
   return (
     <div className={`min-h-screen ${currentTheme.pageBg} text-slate-100 flex flex-col transition-colors duration-500`}>
@@ -61,7 +57,7 @@ export default function CreateGame() {
           <div className="text-center mb-5">
             <h1 className="text-2xl font-bold text-white tracking-tight">Configure New Table</h1>
             <p className="text-xs text-slate-400 mt-0.5">
-              Select your vector insignia and table rules.
+              Set your table rules, blinds, and starting chips.
             </p>
           </div>
 
@@ -84,47 +80,9 @@ export default function CreateGame() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Maverick"
-                className="w-full bg-black/50 border border-white/15 rounded-xl px-4 py-2.5 text-white font-medium focus:outline-none focus:border-amber-400 text-sm transition-colors"
+                className="w-full bg-black/50 border border-white/15 rounded-xl px-4 py-2.5 text-white font-medium focus:outline-none focus:border-emerald-400 text-sm transition-colors"
                 required
               />
-            </div>
-
-            {/* Vector Insignia / Crest Picker */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-semibold text-slate-300">
-                  Select Player Crest
-                </label>
-                <span className="text-xs text-amber-300 font-bold flex items-center gap-1">
-                  <span>{selectedCrest.name}</span>
-                  <span className="text-[9px] uppercase px-1.5 py-0.2 rounded bg-white/10 text-slate-400 font-semibold">{selectedCrest.tag}</span>
-                </span>
-              </div>
-              <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 bg-black/50 p-2.5 rounded-xl border border-white/10">
-                {AVATAR_CRESTS.map((crest) => {
-                  const isSelected = avatar === crest.id;
-                  return (
-                    <button
-                      type="button"
-                      key={crest.id}
-                      onClick={() => setAvatar(crest.id)}
-                      className={`relative p-2 rounded-xl border transition-all flex flex-col items-center justify-center cursor-pointer ${
-                        isSelected
-                          ? `bg-black/80 ${crest.border} ring-2 ring-amber-400/80 scale-105 shadow-lg`
-                          : 'bg-black/30 border-white/10 hover:border-white/20 hover:scale-102 opacity-75 hover:opacity-100'
-                      }`}
-                      title={`${crest.name} (${crest.tag})`}
-                    >
-                      <div className="w-8 h-8 flex items-center justify-center">
-                        {crest.svg}
-                      </div>
-                      <span className="text-[9px] font-semibold text-slate-300 truncate w-full text-center mt-1">
-                        {crest.name.split(' ')[1] || crest.name}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
             </div>
 
             {/* Blinds Configuration */}

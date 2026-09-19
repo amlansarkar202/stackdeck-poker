@@ -1,6 +1,6 @@
 import React from 'react';
 import { WifiOff } from 'lucide-react';
-import { AvatarIcon, AVATAR_CRESTS } from './AvatarIcon';
+import { AvatarIcon } from './AvatarIcon';
 import { useGame } from '../context/GameContext';
 
 export default function PlayerSeat({ player, isSelf = false, onClick = null }) {
@@ -8,8 +8,6 @@ export default function PlayerSeat({ player, isSelf = false, onClick = null }) {
   if (!player) return null;
 
   const isActuallySelf = isSelf || (player.id === user?.id) || (user?.name && player.name && player.name.trim().toLowerCase() === user?.name.trim().toLowerCase());
-  const initials = player.name ? player.name.slice(0, 2).toUpperCase() : 'P';
-  const crest = AVATAR_CRESTS.find(c => c.id === player.avatar);
 
   return (
     <div
@@ -48,15 +46,15 @@ export default function PlayerSeat({ player, isSelf = false, onClick = null }) {
 
       {/* Avatar Container with Glowing Light Ring on Active Turn */}
       <div
-        className={`relative z-10 w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-[#0d1210] border-2 transition-all p-1 sm:p-1.5 ${
+        className={`relative z-10 w-9 h-9 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-[#0d1210] border-2 transition-all p-0.5 ${
           player.isTurn
             ? `${currentTheme.turnRing} turn-ring-active`
             : isActuallySelf
             ? `${currentTheme.accentBorder} ring-1 ${currentTheme.accentRing}`
-            : crest ? crest.border : 'border-white/15'
+            : 'border-white/20'
         }`}
       >
-        <AvatarIcon id={player.avatar || initials} className="w-4.5 h-4.5 sm:w-7 sm:h-7" />
+        <AvatarIcon name={player.name} id={player.id} className="w-full h-full" />
 
         {/* Disconnect indicator */}
         {!player.isConnected && (

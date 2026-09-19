@@ -40,16 +40,14 @@ export function GameProvider({ children }) {
   const [user, setUser] = useState(() => {
     const savedId = sessionStorage.getItem('poker_user_id') || `user_${Math.random().toString(36).substr(2, 9)}`;
     const savedName = sessionStorage.getItem('poker_user_name') || '';
-    const savedAvatar = sessionStorage.getItem('poker_user_avatar') || 'tiger';
     sessionStorage.setItem('poker_user_id', savedId);
-    return { id: savedId, name: savedName, avatar: savedAvatar };
+    return { id: savedId, name: savedName };
   });
 
-  const updateUserProfile = (name, avatar) => {
-    const updated = { ...user, name, avatar };
+  const updateUserProfile = (name) => {
+    const updated = { ...user, name };
     setUser(updated);
     sessionStorage.setItem('poker_user_name', name);
-    sessionStorage.setItem('poker_user_avatar', avatar);
   };
 
   // Sound toggle

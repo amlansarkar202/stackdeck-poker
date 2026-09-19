@@ -150,8 +150,8 @@ export default function ShowdownModal({ isOpen, onClose }) {
                             : 'bg-black/50 border-white/10 hover:border-white/20 hover:bg-white/5'
                         }`}
                       >
-                        <div className="w-7 h-7 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center p-1 shrink-0">
-                          <AvatarIcon id={player.avatar || player.name?.slice(0, 2).toUpperCase()} className="w-4 h-4" />
+                        <div className="w-7 h-7 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center p-0.5 shrink-0">
+                          <AvatarIcon name={player.name} id={player.id} className="w-full h-full" />
                         </div>
                         <div className="flex flex-col min-w-0 flex-1">
                           <span className={`text-xs truncate ${isSelected ? 'font-black text-emerald-200' : 'font-bold text-white'}`}>

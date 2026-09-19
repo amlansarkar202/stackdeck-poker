@@ -178,8 +178,8 @@ export default function LobbyView() {
                     #{idx + 1}
                   </div>
 
-                  <div className="w-8 h-8 rounded-full bg-slate-800 border border-white/15 flex items-center justify-center p-1">
-                    <AvatarIcon id={player.avatar || player.name?.slice(0, 2).toUpperCase()} className="w-5 h-5" />
+                  <div className="w-8 h-8 rounded-full bg-slate-800 border border-white/15 flex items-center justify-center p-0.5">
+                    <AvatarIcon name={player.name} id={player.id} className="w-full h-full" />
                   </div>
 
                   <div>
