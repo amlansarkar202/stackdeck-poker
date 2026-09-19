@@ -16,7 +16,7 @@ export default function PlayerSeat({ player, isSelf = false, onClick = null }) {
       onClick={onClick}
       className={`relative flex flex-col items-center select-none transition-all duration-300 ${
         onClick ? 'cursor-pointer hover:scale-105' : ''
-      } ${player.isFolded ? 'opacity-30 grayscale' : 'opacity-100'}`}
+      } ${player.isSittingOut || player.isFolded ? 'opacity-40 grayscale' : 'opacity-100'}`}
     >
       {/* Position Badges (Dealer Button D / SB / BB) */}
       <div className="absolute -top-3 sm:-top-3.5 flex items-center gap-0.5 z-20">
@@ -68,19 +68,20 @@ export default function PlayerSeat({ player, isSelf = false, onClick = null }) {
           </div>
         )}
 
-        {/* All-in Badge */}
-        {player.isAllIn && !player.isFolded && (
+        {/* Sitting Out / Away Badge */}
+        {player.isSittingOut ? (
+          <span className="absolute -bottom-2 bg-amber-900/90 text-amber-200 text-[8px] font-black uppercase px-1.5 py-0.5 rounded shadow border border-amber-400/40">
+            AWAY
+          </span>
+        ) : player.isAllIn && !player.isFolded ? (
           <span className="absolute -bottom-2 bg-red-600 text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded shadow border border-red-300">
             ALL-IN
           </span>
-        )}
-
-        {/* Folded Badge */}
-        {player.isFolded && (
+        ) : player.isFolded ? (
           <span className="absolute -bottom-2 bg-gray-800 text-gray-400 text-[8px] font-semibold uppercase px-1.5 py-0.5 rounded border border-gray-700">
             FOLD
           </span>
-        )}
+        ) : null}
       </div>
 
       {/* Player Name & Stack Card */}

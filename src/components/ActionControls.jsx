@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useGame } from '../context/GameContext';
-import { XCircle, CheckCircle2, ArrowUpRight, X, CreditCard } from 'lucide-react';
+import { XCircle, CheckCircle2, ArrowUpRight, X, CreditCard, Pause, Play } from 'lucide-react';
 
 export default function ActionControls() {
-  const { gameState, user, sendAction, takeLoan } = useGame();
+  const { gameState, user, sendAction, takeLoan, toggleSitOut } = useGame();
   const {
     players = [],
     currentTurnIndex,
@@ -84,16 +84,30 @@ export default function ActionControls() {
     setIsRaiseOpen(false);
   };
 
-  // Sitting Out with Loan Active
-  if (myPlayer?.isSittingOut && myPlayer?.loanRoundsRemaining > 0) {
+  // Sitting Out (Manual Break or Loan Active)
+  if (myPlayer?.isSittingOut) {
+    const isLoanSitOut = myPlayer?.loanRoundsRemaining > 0;
     return (
-      <div className="w-full bg-[#0d1117]/95 backdrop-blur-md border-t border-white/10 p-3.5 text-center flex flex-col items-center gap-1">
-        <span className="text-xs font-bold text-amber-300">
-          Sitting Out (Loan Stack Active)
-        </span>
+      <div className="w-full bg-[#0d1117]/95 backdrop-blur-md border-t border-white/10 p-3.5 text-center flex flex-col items-center gap-1.5 animate-fade-in">
+        <div className="flex items-center gap-1.5 text-amber-300 font-bold text-xs sm:text-sm">
+          <Pause className="w-4 h-4" />
+          <span>{isLoanSitOut ? 'Sitting Out (Loan Stack Active)' : 'Sitting Out (On Break)'}</span>
+        </div>
         <span className="text-[11px] text-slate-400">
-          You will automatically rejoin the table next hand with your ${myPlayer.stack.toLocaleString()} stack.
+          {isLoanSitOut
+            ? `You will automatically rejoin the table next hand with your $${myPlayer.stack.toLocaleString()} stack.`
+            : 'You are currently sitting out. Tap below to return to active play.'}
         </span>
+        {!isLoanSitOut && (
+          <button
+            type="button"
+            onClick={() => toggleSitOut(myPlayer.id, false)}
+            className="mt-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-1.5 rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-1.5 active:scale-98"
+          >
+            <Play className="w-3.5 h-3.5" />
+            <span>I am Back (Sit In)</span>
+          </button>
+        )}
       </div>
     );
   }

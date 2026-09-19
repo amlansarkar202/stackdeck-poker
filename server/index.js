@@ -335,6 +335,21 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Host / Player Action: Toggle Sit Out (Take break / Return to table)
+  socket.on('toggle_sit_out', ({ roomId, playerId, isSittingOut }, callback) => {
+    try {
+      const room = gameManager.getRoom(roomId);
+      if (!room) throw new Error('Room not found');
+
+      room.engine.toggleSitOut(playerId, isSittingOut);
+      gameManager.broadcastState(room.id);
+      if (callback) callback({ success: true });
+    } catch (err) {
+      console.error('Toggle sit out error:', err);
+      if (callback) callback({ success: false, error: err.message });
+    }
+  });
+
   // Host Action: Update Blind Timer
   socket.on('toggle_blind_timer', ({ roomId, action }, callback) => {
     try {

@@ -204,6 +204,44 @@ export class PokerEngine {
     return true;
   }
 
+  toggleSitOut(playerId, targetState = null) {
+    const playerIdx = this.getPlayerIndex(playerId);
+    if (playerIdx === -1) throw new Error('Player not found');
+    const player = this.players[playerIdx];
+
+    const newState = targetState !== null ? Boolean(targetState) : !player.isSittingOut;
+    player.isSittingOut = newState;
+    if (!newState) {
+      player.loanRoundsRemaining = 0;
+    }
+
+    if (newState) {
+      this.logAction(`⏸️ ${player.name} is sitting out (taking a break)`);
+      if (this.isHandActive && !player.isFolded) {
+        player.isFolded = true;
+        const remainingUnfolded = this.players.filter(p => !p.isFolded);
+        
+        if (remainingUnfolded.length <= 1) {
+          if (remainingUnfolded.length === 1) {
+            const winner = remainingUnfolded[0];
+            const totalPot = this.getTotalPot();
+            winner.stack += totalPot;
+            this.logAction(`🏆 ${winner.name} wins $${totalPot} (everyone else folded/sitting out)`);
+          }
+          this.currentStreet = STREETS.HAND_OVER;
+          this.isHandActive = false;
+          this.currentTurnIndex = null;
+        } else if (this.currentTurnIndex === playerIdx) {
+          this.advanceTurn();
+        }
+      }
+    } else {
+      this.logAction(`▶️ ${player.name} is back in the game!`);
+    }
+
+    return { success: true, isSittingOut: player.isSittingOut, player };
+  }
+
   takeLoan(playerId, customAmount = null) {
     const playerIdx = this.getPlayerIndex(playerId);
     if (playerIdx === -1) throw new Error('Player not found');

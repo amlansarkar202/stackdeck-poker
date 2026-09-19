@@ -280,6 +280,13 @@ export function GameProvider({ children }) {
     });
   };
 
+  const toggleSitOut = (playerId, isSittingOut = null) => {
+    if (!socket || !gameState) return;
+    socket.emit('toggle_sit_out', { roomId: gameState.roomId, playerId, isSittingOut }, (res) => {
+      if (!res.success) setError(res.error);
+    });
+  };
+
   const toggleBlindTimer = (action) => {
     if (!socket || !gameState) return;
     socket.emit('toggle_blind_timer', { roomId: gameState.roomId, action }, (res) => {
@@ -335,6 +342,7 @@ export function GameProvider({ children }) {
     rebuy,
     editStack,
     kickPlayer,
+    toggleSitOut,
     toggleBlindTimer,
     takeLoan,
     repayLoan,

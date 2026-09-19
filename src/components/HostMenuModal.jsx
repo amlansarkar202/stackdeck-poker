@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Settings, PlusCircle, Edit3, UserX, Clock, Play, Pause, X, CreditCard } from 'lucide-react';
+import { Settings, PlusCircle, Edit3, UserX, Clock, Play, Pause, X, CreditCard, Coffee } from 'lucide-react';
 import { useGame } from '../context/GameContext';
 
 export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }) {
-  const { gameState, rebuy, editStack, kickPlayer, toggleBlindTimer, takeLoan, repayLoan, currentTheme } = useGame();
+  const { gameState, rebuy, editStack, kickPlayer, toggleSitOut, toggleBlindTimer, takeLoan, repayLoan, currentTheme } = useGame();
   const { players = [], isTimerRunning, blindTimerMinutes, startingStack = 1000 } = gameState || {};
 
   const [activeTab, setActiveTab] = useState('players');
@@ -174,19 +174,54 @@ export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }
             {/* Table Roster */}
             <div className="bg-black/30 p-3 rounded-xl border border-white/10">
               <span className="font-bold text-slate-300 block mb-1.5">Table Roster</span>
-              <div className="space-y-1 max-h-32 overflow-y-auto">
+              <div className="space-y-1.5 max-h-36 overflow-y-auto pr-0.5">
                 {players.map(p => (
-                  <div key={p.id} className="flex items-center justify-between bg-black/40 p-2 rounded-lg text-xs">
-                    <span className="font-semibold text-slate-200">{p.name} (${p.stack.toLocaleString()})</span>
-                    {p.id !== gameState.hostId && (
+                  <div key={p.id} className="flex items-center justify-between bg-black/40 p-2 rounded-lg text-xs gap-1.5">
+                    <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                      <span className="font-semibold text-slate-200 truncate">{p.name} (${p.stack.toLocaleString()})</span>
+                      {p.isSittingOut && (
+                        <span className="text-[9px] font-bold text-amber-300 bg-amber-500/20 px-1 py-0.5 rounded border border-amber-500/30 shrink-0">
+                          Away
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      {/* Sit Out / Sit In Break Toggle */}
                       <button
-                        onClick={() => handleKick(p.id, p.name)}
-                        className="text-red-400 hover:text-red-300 p-1 bg-red-950/30 rounded hover:bg-red-900/50 cursor-pointer"
-                        title="Remove Player"
+                        type="button"
+                        onClick={() => toggleSitOut(p.id, !p.isSittingOut)}
+                        className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold transition-all cursor-pointer ${
+                          p.isSittingOut
+                            ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm'
+                            : 'bg-white/10 hover:bg-amber-600/80 text-slate-300 hover:text-white border border-white/10'
+                        }`}
+                        title={p.isSittingOut ? `Return ${p.name} to active play` : `Sit out ${p.name} for break / next round`}
                       >
-                        <UserX className="w-3 h-3" />
+                        {p.isSittingOut ? (
+                          <>
+                            <Play className="w-2.5 h-2.5" />
+                            <span>Sit In</span>
+                          </>
+                        ) : (
+                          <>
+                            <Coffee className="w-2.5 h-2.5 text-amber-400" />
+                            <span>Sit Out</span>
+                          </>
+                        )}
                       </button>
-                    )}
+
+                      {/* Kick Player */}
+                      {p.id !== gameState.hostId && (
+                        <button
+                          type="button"
+                          onClick={() => handleKick(p.id, p.name)}
+                          className="text-red-400 hover:text-red-300 p-1 bg-red-950/30 rounded hover:bg-red-900/50 cursor-pointer transition-colors"
+                          title={`Kick ${p.name} from table`}
+                        >
+                          <UserX className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

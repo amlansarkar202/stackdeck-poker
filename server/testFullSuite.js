@@ -132,20 +132,31 @@ console.log('✅ PASSED: Loan stack, sit-out penalty, and double repayment');
 
 
 // ==========================================
-// TEST 5: KICK PLAYER DURING ACTIVE HAND
+// TEST 5: KICK PLAYER & SIT-OUT BREAK TOGGLE DURING ACTIVE HAND
 // ==========================================
-console.log('\n--- Test 5: Kick Player During Active Hand ---');
+console.log('\n--- Test 5: Kick Player & Sit-Out Break Toggle During Active Hand ---');
 const kickEngine = new PokerEngine({ smallBlind: 10, bigBlind: 20, startingStack: 1000 });
 kickEngine.addPlayer({ id: 'k1', name: 'Player 1', stack: 1000 });
 kickEngine.addPlayer({ id: 'k2', name: 'Player 2', stack: 1000 });
 kickEngine.addPlayer({ id: 'k3', name: 'Player 3', stack: 1000 });
 
 kickEngine.startHand();
+
+// Sit out Player 3 mid-hand
+kickEngine.toggleSitOut('k3', true);
+assert(kickEngine.players[2].isSittingOut === true, 'Player 3 is marked sitting out');
+assert(kickEngine.players[2].isFolded === true, 'Player 3 folded upon sitting out');
+
 // Kick Player 2 while hand is active
 kickEngine.removePlayer('k2');
 assert(kickEngine.players.length === 2, 'Player 2 removed from table');
 assert(kickEngine.players.find(p => p.id === 'k2') === undefined, 'Player 2 no longer in roster');
-console.log('✅ PASSED: Robust player removal during active hand');
+
+// Player 3 sits back in
+kickEngine.toggleSitOut('k3', false);
+assert(kickEngine.players[1].isSittingOut === false, 'Player 3 sat back into the game');
+
+console.log('✅ PASSED: Robust player removal and voluntary sit-out during active hand');
 
 
 // ==========================================
