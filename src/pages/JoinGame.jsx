@@ -80,8 +80,12 @@ export default function JoinGame() {
                 type="text"
                 maxLength={6}
                 value={code}
-                onChange={(e) => setCode(e.target.value.toUpperCase())}
+                onChange={(e) => setCode(e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase())}
                 placeholder="e.g. ABCD"
+                autoCapitalize="characters"
+                autoCorrect="off"
+                autoComplete="off"
+                spellCheck="false"
                 className={`w-full bg-black/50 border border-white/15 rounded-xl px-4 py-2.5 text-2xl font-extrabold text-center ${currentTheme.accentTextLight} tracking-widest uppercase focus:outline-none focus:border-emerald-400 transition-colors`}
                 required
               />
