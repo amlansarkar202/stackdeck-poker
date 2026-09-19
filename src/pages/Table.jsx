@@ -194,22 +194,6 @@ export default function Table() {
             </button>
           )}
 
-          {/* Undo Button for Host */}
-          {isHost && !isLobby && gameState?.canUndo && (
-            <button
-              onClick={() => {
-                if (window.confirm('Undo the last action / pot award?')) {
-                  undoAction();
-                }
-              }}
-              className="flex items-center gap-1 bg-amber-600/90 hover:bg-amber-500 text-white px-2 py-1 rounded-lg text-xs font-bold transition-all shadow cursor-pointer active:scale-95"
-              title="Undo last action or pot award"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span className="hidden xs:inline">Undo</span>
-            </button>
-          )}
-
           {/* Host Controls Button */}
           {isHost && !isLobby && (
             <button
