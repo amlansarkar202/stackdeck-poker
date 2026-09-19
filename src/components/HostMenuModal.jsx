@@ -3,7 +3,7 @@ import { Settings, PlusCircle, Edit3, UserX, Clock, Play, Pause, X, CreditCard }
 import { useGame } from '../context/GameContext';
 
 export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }) {
-  const { gameState, rebuy, editStack, kickPlayer, toggleBlindTimer, takeLoan, repayLoan } = useGame();
+  const { gameState, rebuy, editStack, kickPlayer, toggleBlindTimer, takeLoan, repayLoan, currentTheme } = useGame();
   const { players = [], isTimerRunning, blindTimerMinutes, startingStack = 1000 } = gameState || {};
 
   const [activeTab, setActiveTab] = useState('players');
@@ -33,17 +33,17 @@ export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-      <div className="bg-[#111620] border border-white/15 rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-2xl flex flex-col max-h-[90vh]">
+      <div className="bg-[#0b1219] border border-white/15 rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-2xl flex flex-col max-h-[90vh]">
         
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-white/10">
           <div className="flex items-center gap-2 text-white font-bold text-base sm:text-lg">
-            <Settings className="w-4 h-4 text-amber-400" />
+            <Settings className={`w-4.5 h-4.5 ${currentTheme?.accentText || 'text-emerald-400'}`} />
             <span>Host Controls</span>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -54,7 +54,9 @@ export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }
           <button
             onClick={() => setActiveTab('players')}
             className={`flex-1 py-1.5 rounded-lg font-semibold text-xs transition-colors cursor-pointer ${
-              activeTab === 'players' ? 'bg-amber-400 text-gray-950 font-bold' : 'bg-white/5 text-slate-300 hover:bg-white/10'
+              activeTab === 'players'
+                ? `${currentTheme?.primaryBtn || 'bg-emerald-600 text-white'} font-bold`
+                : 'bg-white/5 text-slate-300 hover:bg-white/10'
             }`}
           >
             Chips & Stacks
@@ -62,7 +64,9 @@ export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }
           <button
             onClick={() => setActiveTab('timer')}
             className={`flex-1 py-1.5 rounded-lg font-semibold text-xs transition-colors cursor-pointer ${
-              activeTab === 'timer' ? 'bg-amber-400 text-gray-950 font-bold' : 'bg-white/5 text-slate-300 hover:bg-white/10'
+              activeTab === 'timer'
+                ? `${currentTheme?.primaryBtn || 'bg-emerald-600 text-white'} font-bold`
+                : 'bg-white/5 text-slate-300 hover:bg-white/10'
             }`}
           >
             Blind Timer
@@ -79,7 +83,7 @@ export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }
               <select
                 value={targetPlayerId}
                 onChange={(e) => setTargetPlayerId(e.target.value)}
-                className="w-full bg-black/60 border border-white/15 rounded-lg p-2 font-medium text-white focus:outline-none focus:border-amber-400"
+                className="w-full bg-black/60 border border-white/15 rounded-lg p-2 font-medium text-white focus:outline-none focus:border-emerald-400"
               >
                 {players.map(p => (
                   <option key={p.id} value={p.id}>
@@ -91,7 +95,7 @@ export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }
 
             {/* Quick Rebuy */}
             <div className="bg-black/30 p-3 rounded-xl border border-white/10 flex flex-col gap-2">
-              <span className="font-bold text-emerald-400 flex items-center gap-1">
+              <span className={`font-bold ${currentTheme?.accentText || 'text-emerald-400'} flex items-center gap-1`}>
                 <PlusCircle className="w-3.5 h-3.5" /> Add Chips / Rebuy
               </span>
               <div className="flex gap-2">
@@ -115,7 +119,7 @@ export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }
 
             {/* Edit Exact Stack */}
             <div className="bg-black/30 p-3 rounded-xl border border-white/10 flex flex-col gap-2">
-              <span className="font-bold text-amber-400 flex items-center gap-1">
+              <span className={`font-bold ${currentTheme?.accentTextLight || 'text-emerald-300'} flex items-center gap-1`}>
                 <Edit3 className="w-3.5 h-3.5" /> Set Exact Stack Balance
               </span>
               <div className="flex gap-2">
@@ -130,7 +134,7 @@ export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }
                 />
                 <button
                   onClick={handleEditStack}
-                  className="bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                  className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
                 >
                   Set
                 </button>
@@ -140,7 +144,7 @@ export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }
             {/* Loan Stack Controls */}
             <div className="bg-black/30 p-3 rounded-xl border border-white/10 flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-blue-400 flex items-center gap-1 text-xs">
+                <span className="font-bold text-sky-400 flex items-center gap-1 text-xs">
                   <CreditCard className="w-3.5 h-3.5" /> Loan Stack & Debt
                 </span>
                 {targetPlayer?.loanAmount > 0 && (
@@ -152,14 +156,14 @@ export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }
               <div className="flex gap-2">
                 <button
                   onClick={() => takeLoan(targetPlayerId, startingStack)}
-                  className="flex-1 bg-blue-600/80 hover:bg-blue-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer"
+                  className="flex-1 bg-sky-600 hover:bg-sky-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer"
                 >
                   Issue Loan (${startingStack})
                 </button>
                 {targetPlayer?.loanAmount > 0 && (
                   <button
                     onClick={() => repayLoan(targetPlayerId)}
-                    className="bg-emerald-600/80 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer"
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer"
                   >
                     Repay Debt
                   </button>
@@ -195,7 +199,7 @@ export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }
         {activeTab === 'timer' && (
           <div className="space-y-3 my-3">
             <div className="bg-black/30 p-4 rounded-xl border border-white/10 text-center flex flex-col items-center gap-2">
-              <Clock className="w-8 h-8 text-amber-400" />
+              <Clock className={`w-8 h-8 ${currentTheme?.accentText || 'text-emerald-400'}`} />
               <div>
                 <h3 className="font-bold text-white text-sm">Automatic Blind Increase</h3>
                 <p className="text-xs text-slate-400 mt-0.5">
@@ -208,7 +212,7 @@ export default function HostMenuModal({ isOpen, onClose, selectedPlayer = null }
                   {isTimerRunning ? (
                     <button
                       onClick={() => toggleBlindTimer('pause')}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold text-xs transition-colors cursor-pointer"
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs transition-colors cursor-pointer"
                     >
                       <Pause className="w-3.5 h-3.5" /> Pause Timer
                     </button>

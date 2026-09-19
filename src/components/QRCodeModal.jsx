@@ -4,7 +4,7 @@ import { QrCode, Copy, Check, X, Smartphone } from 'lucide-react';
 import { useGame } from '../context/GameContext';
 
 export default function QRCodeModal({ isOpen, onClose, roomId }) {
-  const { networkInfo } = useGame();
+  const { networkInfo, currentTheme } = useGame();
   const [copied, setCopied] = useState(false);
 
   // Live Invite & QR Join URL (Always uses the exact current domain)
@@ -18,17 +18,17 @@ export default function QRCodeModal({ isOpen, onClose, roomId }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-      <div className="bg-[#111620] border border-white/15 rounded-2xl p-5 sm:p-6 max-w-sm w-full shadow-2xl flex flex-col items-center text-center">
+      <div className="bg-[#0b1219] border border-white/15 rounded-2xl p-5 sm:p-6 max-w-sm w-full shadow-2xl flex flex-col items-center text-center">
         
         {/* Header */}
         <div className="w-full flex items-center justify-between pb-3 border-b border-white/10">
           <div className="flex items-center gap-2 text-white font-bold text-base">
-            <QrCode className="w-4 h-4 text-amber-400" />
+            <QrCode className={`w-4.5 h-4.5 ${currentTheme?.accentText || 'text-emerald-400'}`} />
             <span>Join With Smartphone</span>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -37,13 +37,13 @@ export default function QRCodeModal({ isOpen, onClose, roomId }) {
         {/* Room Code Badge */}
         <div className="my-3">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Room Code</span>
-          <div className="text-2xl font-extrabold tracking-widest text-amber-300 px-4 py-1 rounded-xl bg-black/60 border border-amber-500/30 inline-block">
+          <div className={`text-2xl font-extrabold tracking-widest ${currentTheme?.accentTextLight || 'text-emerald-300'} px-4 py-1 rounded-xl bg-black/60 border ${currentTheme?.accentBorder || 'border-emerald-500/40'} inline-block`}>
             {roomId}
           </div>
         </div>
 
         {/* QR Code Container */}
-        <div className="bg-white p-3.5 rounded-xl shadow-lg border-2 border-amber-400/40 mb-3">
+        <div className={`bg-white p-3.5 rounded-xl shadow-lg border-2 ${currentTheme?.accentBorder || 'border-emerald-500/40'} mb-3`}>
           <QRCodeSVG
             value={joinUrl}
             size={160}
@@ -55,7 +55,7 @@ export default function QRCodeModal({ isOpen, onClose, roomId }) {
         </div>
 
         <p className="text-xs text-slate-300 font-medium flex items-center justify-center gap-1.5 mb-3">
-          <Smartphone className="w-3.5 h-3.5 text-amber-400" />
+          <Smartphone className={`w-3.5 h-3.5 ${currentTheme?.accentText || 'text-emerald-400'}`} />
           <span>Scan with camera on local Wi-Fi to join</span>
         </p>
 

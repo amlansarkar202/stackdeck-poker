@@ -3,7 +3,7 @@ import { History, RotateCcw, X } from 'lucide-react';
 import { useGame } from '../context/GameContext';
 
 export default function ActivityLogModal({ isOpen, onClose, isHost }) {
-  const { gameState, undoAction } = useGame();
+  const { gameState, undoAction, currentTheme } = useGame();
   const { actionLog = [], canUndo = false } = gameState || {};
 
   if (!isOpen) return null;
@@ -16,17 +16,17 @@ export default function ActivityLogModal({ isOpen, onClose, isHost }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-      <div className="bg-[#111620] border border-white/15 rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-2xl flex flex-col max-h-[85vh]">
+      <div className="bg-[#0b1219] border border-white/15 rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-2xl flex flex-col max-h-[85vh]">
         
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-white/10">
           <div className="flex items-center gap-2 text-white font-bold text-base sm:text-lg">
-            <History className="w-4 h-4 text-amber-400" />
+            <History className={`w-4.5 h-4.5 ${currentTheme?.accentText || 'text-emerald-400'}`} />
             <span>Table Activity Log</span>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -42,7 +42,7 @@ export default function ActivityLogModal({ isOpen, onClose, isHost }) {
             actionLog.slice().reverse().map((log, idx) => (
               <div
                 key={idx}
-                className="bg-black/30 p-2 rounded-lg border border-white/5 text-slate-300"
+                className="bg-black/40 p-2.5 rounded-lg border border-white/5 text-slate-300"
               >
                 {log}
               </div>
@@ -58,7 +58,7 @@ export default function ActivityLogModal({ isOpen, onClose, isHost }) {
               disabled={!canUndo}
               className={`flex items-center justify-center gap-1.5 flex-1 py-2.5 rounded-xl font-bold text-xs transition-all ${
                 canUndo
-                  ? 'bg-amber-500 hover:bg-amber-400 text-gray-950 shadow-md cursor-pointer'
+                  ? `${currentTheme?.primaryBtn || 'bg-emerald-600 hover:bg-emerald-500 text-white'} shadow-md cursor-pointer`
                   : 'bg-white/5 text-slate-600 cursor-not-allowed opacity-40'
               }`}
             >
