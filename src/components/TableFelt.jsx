@@ -58,7 +58,7 @@ export default function TableFelt({
     <div className="relative w-full max-w-6xl mx-auto flex flex-col items-center select-none py-1 sm:py-2 px-1 sm:px-2">
       
       {/* Felt Board Container (Expanded Vertical Spacing for Mobile Portrait) */}
-      <div className="relative w-full aspect-[9/13] xs:aspect-[1/1] sm:aspect-[16/9] md:aspect-[18/9] min-h-[480px] xs:min-h-[500px] sm:min-h-[520px] max-h-[620px] rounded-[36px] sm:rounded-[52px] poker-felt-emerald flex items-center justify-center p-1 sm:p-6 transition-all duration-300">
+      <div className={`relative w-full aspect-[9/13] xs:aspect-[1/1] sm:aspect-[16/9] md:aspect-[18/9] min-h-[480px] xs:min-h-[500px] sm:min-h-[520px] max-h-[620px] rounded-[36px] sm:rounded-[52px] ${themeClass} flex items-center justify-center p-1 sm:p-6 transition-all duration-300`}>
         
         {/* Table Center Info Deck (Compact to ensure zero overlap on portrait/mobile) */}
         <div className="relative z-10 flex flex-col items-center text-center p-1.5 sm:p-3 rounded-2xl sm:rounded-3xl bg-[#030a05]/92 backdrop-blur-xl border border-emerald-500/25 shadow-2xl max-w-[155px] xs:max-w-[175px] sm:max-w-[260px] w-full">

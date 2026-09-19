@@ -8,7 +8,8 @@ import ActionControls from '../components/ActionControls';
 import ShowdownModal from '../components/ShowdownModal';
 import HostMenuModal from '../components/HostMenuModal';
 import ActivityLogModal from '../components/ActivityLogModal';
-import { History, Settings, Play, Volume2, VolumeX, CheckCircle, Copy, Check } from 'lucide-react';
+import ThemeSelectorModal from '../components/ThemeSelectorModal';
+import { History, Settings, Play, Palette, Volume2, VolumeX, CheckCircle, Copy, Check } from 'lucide-react';
 
 export default function Table() {
   const { id: routeRoomId } = useParams();
@@ -19,6 +20,7 @@ export default function Table() {
   const [showHostMenu, setShowHostMenu] = useState(false);
   const [showLog, setShowLog] = useState(false);
   const [showShowdown, setShowShowdown] = useState(false);
+  const [showThemeModal, setShowThemeModal] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
 
   const roomId = gameState?.roomId || routeRoomId?.toUpperCase();
@@ -118,6 +120,15 @@ export default function Table() {
         {/* Right: Actions */}
         <div className="flex items-center gap-1 sm:gap-1.5">
 
+          {/* Theme Switcher Button */}
+          <button
+            onClick={() => setShowThemeModal(true)}
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
+            title="Change Theme"
+          >
+            <Palette className="w-3.5 h-3.5" />
+          </button>
+
           {/* Sound Toggle */}
           <button
             onClick={toggleSound}
@@ -200,6 +211,11 @@ export default function Table() {
         isOpen={showLog}
         onClose={() => setShowLog(false)}
         isHost={isHost}
+      />
+
+      <ThemeSelectorModal
+        isOpen={showThemeModal}
+        onClose={() => setShowThemeModal(false)}
       />
 
     </div>

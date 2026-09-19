@@ -20,14 +20,21 @@ export function GameProvider({ children }) {
   const [error, setError] = useState(null);
   const [reconnectAlert, setReconnectAlert] = useState(null);
 
-  // Table Theme: Monaco Emerald (Permanent Default)
-  const [tableTheme] = useState('emerald');
-  const setTableTheme = () => {};
-  const currentTheme = THEMES.emerald;
+  // Table Theme: Monaco Emerald by default on every load/refresh
+  const [tableTheme, setTableThemeState] = useState('emerald');
+
+  const setTableTheme = (themeName) => {
+    if (THEMES[themeName]) {
+      setTableThemeState(themeName);
+      document.documentElement.setAttribute('data-theme', themeName);
+    }
+  };
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', 'emerald');
-  }, []);
+    document.documentElement.setAttribute('data-theme', tableTheme);
+  }, [tableTheme]);
+
+  const currentTheme = THEMES[tableTheme] || THEMES.emerald;
 
   // Local User Identity per Browser Tab (Enables multiple tabs to be separate players)
   const [user, setUser] = useState(() => {

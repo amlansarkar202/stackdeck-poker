@@ -9,7 +9,7 @@
   }
 }
 
-/* --- GLOBAL THEME: MONACO CASINO EMERALD (DEFAULT) --- */
+/* --- GLOBAL THEME 1: MONACO CASINO EMERALD (DEFAULT) --- */
 :root,
 [data-theme="emerald"] {
   --bg-primary: #030a05;
@@ -20,7 +20,29 @@ body {
   background: radial-gradient(circle at 50% 0%, #0a2516 0%, #030a05 85%);
 }
 
-/* --- PROFESSIONAL CASINO TABLE FELT --- */
+/* --- GLOBAL THEME 2: EXECUTIVE NOIR --- */
+[data-theme="cyberpunk"],
+[data-theme="noir"] {
+  --bg-primary: #090c10;
+  --bg-gradient: radial-gradient(circle at 50% 0%, #151a23 0%, #090c10 75%);
+  --accent: #f59e0b;
+}
+[data-theme="cyberpunk"] body,
+[data-theme="noir"] body {
+  background: radial-gradient(circle at 50% 0%, #151a23 0%, #090c10 75%);
+}
+
+/* --- GLOBAL THEME 3: HIGH ROLLER NAVY --- */
+[data-theme="sapphire"] {
+  --bg-primary: #050b14;
+  --bg-gradient: radial-gradient(circle at 50% 0%, #0f1f38 0%, #050b14 75%);
+  --accent: #3b82f6;
+}
+[data-theme="sapphire"] body {
+  background: radial-gradient(circle at 50% 0%, #0f1f38 0%, #050b14 75%);
+}
+
+/* --- PROFESSIONAL CASINO TABLE FELT (EMERALD) --- */
 .poker-felt-emerald {
   background: radial-gradient(ellipse at 50% 45%, #134e2c 0%, #0d381f 45%, #072213 75%, #031209 100%);
   box-shadow: 
@@ -42,8 +64,47 @@ body {
   pointer-events: none;
 }
 
+/* --- EXECUTIVE NOIR FELT --- */
+.poker-felt-cyberpunk,
+.poker-felt-noir {
+  background: radial-gradient(ellipse at 50% 45%, #151a23 0%, #0d1117 55%, #07090d 100%);
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.95), 0 25px 60px rgba(0, 0, 0, 0.85);
+  border: 13px solid #1c222d;
+  outline: 2px solid rgba(245, 158, 11, 0.35);
+  position: relative;
+}
+.poker-felt-cyberpunk::before,
+.poker-felt-noir::before {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  pointer-events: none;
+}
+
+/* --- HIGH ROLLER NAVY FELT --- */
+.poker-felt-sapphire {
+  background: radial-gradient(ellipse at 50% 45%, #132238 0%, #0c1524 55%, #060b13 100%);
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.95), 0 25px 60px rgba(0, 0, 0, 0.85);
+  border: 13px solid #19202c;
+  outline: 2px solid rgba(59, 130, 246, 0.4);
+  position: relative;
+}
+.poker-felt-sapphire::before {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border-radius: 28px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  pointer-events: none;
+}
+
 @media (min-width: 640px) {
-  .poker-felt-emerald::before {
+  .poker-felt-emerald::before,
+  .poker-felt-cyberpunk::before,
+  .poker-felt-noir::before,
+  .poker-felt-sapphire::before {
     inset: 22px;
     border-radius: 40px;
   }
